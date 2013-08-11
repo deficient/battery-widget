@@ -56,9 +56,6 @@ function battery_widget:get_state()
     local present, capacity, state, rate, charge
     local percent, time, is_charging
 
-    -- local bat_state = readfile("/proc/acpi/battery/"..self..adapter.."/state")
-    -- local ac_state  = readfile("/sys/class/power_supply/AC/online")
-
     local dir = "/sys/class/power_supply/" .. self.adapter
     present   = readfile(dir.."/present")
     state     = trim(readfile(dir.."/status"):lower())
