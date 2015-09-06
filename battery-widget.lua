@@ -20,6 +20,13 @@ local function readfile(command)
     return text
 end
 
+function fg(color, text)
+    if color == nil then
+        return text
+    else
+        return '<span color="' .. color .. '">' .. text .. '</span>'
+    end
+end
 
 ------------------------------------------
 -- Battery widget interface
