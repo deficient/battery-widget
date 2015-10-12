@@ -67,20 +67,21 @@ function battery_widget:get_state()
     local present, capacity, state, rate, charge
     local percent, time, is_charging
 
-    local dir = "/sys/class/power_supply/" .. self.adapter
+    local pre = "/sys/class/power_supply/"
+    local dir = pre .. self.adapter
     present   = readfile(dir.."/present")
     state     = trim(readfile(dir.."/status"):lower())
     rate      = readfile(dir.."/power_now")
     charge    = readfile(dir.."/energy_now")
     capacity  = readfile(dir.."/energy_full")
     design    = readfile(dir.."/energy_full_design")
+    ac_state  = readfile(pre.."/AC/online")
 
     if state == "unknown" then
         state = "charged"
     end
 
-    -- ac_state = tonumber(ac_state)
-    ac_state = state ~= "discharging"
+    ac_state = tonumber(ac_state)
     rate = tonumber(rate)
     charge = tonumber(charge)
     capacity = tonumber(capacity)
@@ -110,7 +111,7 @@ function battery_widget:update()
     local time_hour, time_minute, time_str, est_postfix
 
     -- AC/battery prefix
-    if ac_state then
+    if ac_state == 1 then
         prefix = "AC: "
     else
         prefix = "Bat: "
