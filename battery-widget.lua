@@ -28,6 +28,10 @@ function fg(color, text)
     end
 end
 
+function round(value)
+  return math.floor(value + 0.5)
+end
+
 ------------------------------------------
 -- Battery widget interface
 ------------------------------------------
@@ -82,7 +86,7 @@ function battery_widget:get_state()
     capacity = tonumber(capacity)
 
     -- loaded percentage
-    percent = math.floor(charge * 100 / capacity)
+    percent = round(charge * 100 / capacity)
 
     -- estimate time
     is_charging = 0
@@ -141,7 +145,7 @@ function battery_widget:update()
     self.widget:set_markup(prefix..text)
 
     -- capacity text
-    captext = "\nCapacity: " .. math.ceil(capacity/design*100) .. "%"
+    captext = "\nCapacity: " .. round(capacity/design*100) .. "%"
 
     -- update tooltip
     if is_charging == 1 then
