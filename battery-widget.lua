@@ -20,7 +20,7 @@ local function readfile(command)
     return text
 end
 
-function fg(color, text)
+local function fg(color, text)
     if color == nil then
         return text
     else
@@ -28,9 +28,16 @@ function fg(color, text)
     end
 end
 
-function round(value)
+local function round(value)
   return math.floor(value + 0.5)
 end
+
+local function trim(s)
+    if s == nil then return nil end
+  -- from PiL2 20.4
+  return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 
 ------------------------------------------
 -- Battery widget interface
