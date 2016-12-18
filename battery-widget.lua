@@ -133,14 +133,15 @@ function battery_widget:update()
     -- Percentage
     -- text =  "⚡ ".. percent .. "%"
     if percent == nil then
-        percent = "Err!"
-    end
-    text =  percent .. "%"
-    for k,v in ipairs(self.limits) do
-        if percent <= v[1] then
-            text = fg(v[2], text)
-            break
-        end
+        text = "Err!%"
+    else
+      text =  percent .. "%"
+      for k,v in ipairs(self.limits) do
+          if percent <= v[1] then
+              text = fg(v[2], text)
+              break
+          end
+      end
     end
 
     -- Time
