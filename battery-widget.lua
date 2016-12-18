@@ -15,6 +15,9 @@ battery_widget.wmt.__index = battery_widget
 
 local function readfile(command)
     local file = io.open(command)
+    if file == nil then
+        return nil
+    end
     local text = file:read('*all')
     file:close()
     return text
@@ -89,21 +92,24 @@ function battery_widget:get_state()
     end
 
     ac_state = tonumber(ac_state)
-    rate = tonumber(rate)
-    charge = tonumber(charge)
+    rate     = tonumber(rate)
+    charge   = tonumber(charge)
     capacity = tonumber(capacity)
 
     -- loaded percentage
-    percent = round(charge * 100 / capacity)
+    percent = nil
+    if charge ~= nil and capacity ~= nil then
+        percent = round(charge * 100 / capacity)
+    end
 
     -- estimate time
     is_charging = 0
     time = -1
-    if rate ~= 0 then
+    if rate ~= 0 and rate ~= nil then
         if state == "charging" then
             time = (capacity - charge) / rate
             is_charging = 1
-        elseif state == "discharging" then
+        elseif state == "discharging" or state == nil then
             time = charge / rate
             is_charging = -1
         end
@@ -126,6 +132,9 @@ function battery_widget:update()
 
     -- Percentage
     -- text =  "⚡ ".. percent .. "%"
+    if percent == nil then
+        percent = "Err!"
+    end
     text =  percent .. "%"
     for k,v in ipairs(self.limits) do
         if percent <= v[1] then
@@ -153,9 +162,16 @@ function battery_widget:update()
     self.widget:set_markup(prefix..text)
 
     -- capacity text
-    captext = "\nCapacity: " .. round(capacity/design*100) .. "%"
+    if capacity ~= nil and design ~= nil then
+        captext = "\nCapacity: " .. round(capacity/design*100) .. "%"
+    else
+        captext = "\nCapacity: Err!"
+    end
 
     -- update tooltip
+    if state == nil then
+        state = "Err!"
+    end
     if is_charging == 1 then
         self.tooltip:set_text("Battery "..state..est_postfix..captext)
     elseif is_charging == -1 then
