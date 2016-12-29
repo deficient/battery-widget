@@ -50,6 +50,8 @@ function battery_widget.new(args)
     local sw = setmetatable({}, battery_widget.wmt)
 
     sw.adapter = args.adapter or "BAT0"
+    sw.ac_prefix = args.ac_prefix or "AC: "
+    sw.battery_prefix = args.battery_prefix or "Bat: "
     sw.limits = args.limits or {
         {25, "red"},
         {50, "orange"},
@@ -125,9 +127,9 @@ function battery_widget:update()
 
     -- AC/battery prefix
     if ac_state == 1 then
-        prefix = "AC: "
+        prefix = self.ac_prefix
     else
-        prefix = "Bat: "
+        prefix = self.battery_prefix
     end
 
     -- Percentage
