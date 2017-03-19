@@ -1,4 +1,5 @@
 local awful = require("awful")
+local gears = require("gears")
 local wibox = require("wibox")
 
 -- Battery widget
@@ -67,7 +68,7 @@ function battery_widget.new(args)
         awful.button({ }, 3, function() sw:update() end)
     ))
 
-    sw.timer = timer({ timeout = args.timeout or 10 })
+    sw.timer = gears.timer({ timeout = args.timeout or 10 })
     sw.timer:connect_signal("timeout", function() sw:update() end)
     sw.timer:start()
     sw:update()
