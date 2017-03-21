@@ -1,14 +1,8 @@
+-- Battery widget
+
 local awful = require("awful")
 local gears = require("gears")
 local wibox = require("wibox")
-
--- Battery widget
-
--- battery_widget.mt: module (class) metatable
--- battery_widget.wmt: widget (instance) metatable
-local battery_widget = { mt = {}, wmt = {} }
-battery_widget.wmt.__index = battery_widget
-
 
 ------------------------------------------
 -- Private utility functions
@@ -47,8 +41,10 @@ end
 -- Battery widget interface
 ------------------------------------------
 
-function battery_widget.new(args)
-    local sw = setmetatable({}, battery_widget.wmt)
+local battery_widget = {}
+
+function battery_widget:new(args)
+    local sw = setmetatable({}, {__index = self})
 
     sw.adapter = args.adapter or "BAT0"
     sw.ac_prefix = args.ac_prefix or "AC: "
@@ -185,10 +181,6 @@ function battery_widget:update()
     end
 end
 
-
-function battery_widget.mt:__call(...)
-    return battery_widget.new(...)
-end
-
-return setmetatable(battery_widget, battery_widget.mt)
-
+return setmetatable(battery_widget, {
+  __call = battery_widget.new,
+})
