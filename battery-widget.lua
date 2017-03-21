@@ -44,32 +44,34 @@ end
 local battery_widget = {}
 
 function battery_widget:new(args)
-    local sw = setmetatable({}, {__index = self})
+    return setmetatable({}, {__index = self}):init(args)
+end
 
-    sw.adapter = args.adapter or "BAT0"
-    sw.ac_prefix = args.ac_prefix or "AC: "
-    sw.battery_prefix = args.battery_prefix or "Bat: "
-    sw.limits = args.limits or {
+function battery_widget:init(args)
+    self.adapter = args.adapter or "BAT0"
+    self.ac_prefix = args.ac_prefix or "AC: "
+    self.battery_prefix = args.battery_prefix or "Bat: "
+    self.limits = args.limits or {
         {25, "red"},
         {50, "orange"},
         {100, "green"}
     }
 
-    sw.widget = wibox.widget.textbox()
-    sw.widget.set_align("right")
-    sw.tooltip = awful.tooltip({objects={sw.widget}})
+    self.widget = wibox.widget.textbox()
+    self.widget.set_align("right")
+    self.tooltip = awful.tooltip({objects={self.widget}})
 
-    sw.widget:buttons(awful.util.table.join(
-        awful.button({ }, 1, function() sw:update() end),
-        awful.button({ }, 3, function() sw:update() end)
+    self.widget:buttons(awful.util.table.join(
+        awful.button({ }, 1, function() self:update() end),
+        awful.button({ }, 3, function() self:update() end)
     ))
 
-    sw.timer = gears.timer({ timeout = args.timeout or 10 })
-    sw.timer:connect_signal("timeout", function() sw:update() end)
-    sw.timer:start()
-    sw:update()
+    self.timer = gears.timer({ timeout = args.timeout or 10 })
+    self.timer:connect_signal("timeout", function() self:update() end)
+    self.timer:start()
+    self:update()
 
-    return sw
+    return self
 end
 
 function battery_widget:get_state()
