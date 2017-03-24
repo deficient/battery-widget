@@ -67,7 +67,7 @@ function battery_widget:init(args)
         {50, "orange"},
         {100, "green"}
     }
-    self.text_template = args.text_template or "${prefix}${color_on}${text}${color_off}"
+    self.text_template = args.text_template or "${prefix}${color_on}${percent}%${color_off}"
     self.tooltip_template = args.tooltip_template or "Battery ${state}${est_postfix}${captext}"
 
     self.widget = wibox.widget.textbox()
@@ -173,11 +173,11 @@ function battery_widget:update()
     local ctx = self:get_state()
 
     -- AC/battery prefix
-    ctx.prefix = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
-    ctx.text   = (ctx.percent or "Err!") .. '%'
-    ctx.state  = ctx.state or "Err!"
+    ctx.prefix  = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
+    ctx.percent = ctx.percent or "Err!"
+    ctx.state   = ctx.state or "Err!"
 
-    -- Percentage
+    -- Colors
     ctx.color_on = ""
     ctx.color_off = ""
     if ctx.percent then
