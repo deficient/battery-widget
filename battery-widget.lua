@@ -142,6 +142,9 @@ function battery_widget:update()
       for k,v in ipairs(self.limits) do
           if percent <= v[1] then
               text = fg(v[2], text)
+              if ac_state ~= 1 and v[3] ~= nil then
+                  prefix = v[3]
+              end
               break
           end
       end
