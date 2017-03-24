@@ -56,6 +56,8 @@ function battery_widget:init(args)
         {50, "orange"},
         {100, "green"}
     }
+    self.widget_prefix = args.widget_prefix or ""
+    self.widget_suffix = args.widget_suffix or ""
 
     self.widget = wibox.widget.textbox()
     self.widget.set_align("right")
@@ -161,7 +163,11 @@ function battery_widget:update()
 
 
     -- update text
-    self.widget:set_markup(prefix..text)
+    self.widget:set_markup(
+            self.widget_prefix
+            .. prefix .. text
+            .. self.widget_suffix
+        )
 
     -- capacity text
     if capacity ~= nil and design ~= nil then
