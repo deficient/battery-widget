@@ -118,8 +118,8 @@ function battery_widget:get_state()
       return trim(readfile(filename))
     end
 
-    present   = read_trim(dir.."/"..sysfs.present)
     state     = read_trim(dir.."/"..sysfs.state):lower()
+    present   = read_trim(dir.."/"..sysfs.present)
     rate      = read_trim(dir.."/"..sysfs.rate)
     charge    = read_trim(dir.."/"..sysfs.charge)
     capacity  = read_trim(dir.."/"..sysfs.capacity)
@@ -131,6 +131,7 @@ function battery_widget:get_state()
         state = "charged"
     end
 
+    present  = tonumber(present)
     rate     = tonumber(rate)
     charge   = tonumber(charge)
     capacity = tonumber(capacity)
