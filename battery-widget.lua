@@ -40,7 +40,7 @@ end
 
 local function substitute(template, context)
   return (template:gsub("%${([%w_]+)}", function(key)
-    return tostring(context[key])
+    return tostring(context[key] or "Err!")
   end))
 end
 
@@ -158,8 +158,6 @@ function battery_widget:update()
 
     -- AC/battery prefix
     ctx.AC_BAT  = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
-    ctx.percent = ctx.percent or "Err!"
-    ctx.state   = ctx.state or "Err!"
 
     -- Colors
     ctx.color_on = ""
@@ -200,9 +198,8 @@ function battery_widget:update()
     end
 
     -- capacity text
-    if ctx.capacity and ctx.design
-      then ctx.capacity_percent = round(ctx.capacity/ctx.design*100)
-      else ctx.capacity_percent = "Err!"
+    if ctx.capacity and ctx.design then
+        ctx.capacity_percent = round(ctx.capacity/ctx.design*100)
     end
 
     -- update text
