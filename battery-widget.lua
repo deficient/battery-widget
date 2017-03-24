@@ -8,6 +8,13 @@ local wibox = require("wibox")
 -- Private utility functions
 ------------------------------------------
 
+local function file_exists(command)
+    local f = io.open(command)
+    if not f then return false end
+    f:close()
+    return true
+end
+
 local function readfile(command)
     local file = io.open(command)
     if file == nil then
@@ -101,24 +108,15 @@ function battery_widget:get_state()
     local present, capacity, state, rate, charge
     local percent, time, is_charging
 
-    local pre = "/sys/class/power_supply/"
-    local dir = pre .. self.adapter
-
-    local sysfs = sysfs_names.charging
+    local pre   = "/sys/class/power_supply/"
+    local dir   = pre .. self.adapter
+    local sysfs = (file_exists(dir.."/"..sysfs_names.charging.rate)
+                   and sysfs_names.charging
+                   or sysfs_names.discharging)
 
     present   = readfile(dir.."/"..sysfs.present)
     state     = trim(readfile(dir.."/"..sysfs.state):lower())
-
-    -- avoid failing for each file that might be found under another name.
     rate      = readfile(dir.."/"..sysfs.rate)
-    if rate == nil then
-        sysfs = sysfs_names.discharging
-        rate  = readfile(dir.."/"..sysfs.rate)
-        if rate == nil then
-            print("Error: no known sysfs files in " .. dir ".")
-        end
-    end
-
     charge    = readfile(dir.."/"..sysfs.charge)
     capacity  = readfile(dir.."/"..sysfs.capacity)
     design    = readfile(dir.."/"..sysfs.design)
@@ -129,10 +127,10 @@ function battery_widget:get_state()
         state = "charged"
     end
 
-    ac_state = tonumber(ac_state)
     rate     = tonumber(rate)
     charge   = tonumber(charge)
     capacity = tonumber(capacity)
+    ac_state = tonumber(ac_state)
     percent  = tonumber(percent)
 
     -- loaded percentage
