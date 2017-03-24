@@ -135,7 +135,7 @@ function battery_widget:get_state()
     percent  = tonumber(percent)
 
     -- loaded percentage
-    if percentage == nil and charge ~= nil and capacity ~= nil then
+    if charge and capacity and not percent then
         percent = round(charge * 100 / capacity)
     end
 
