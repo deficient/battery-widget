@@ -74,19 +74,56 @@ function battery_widget:init(args)
     return self
 end
 
+local sysfs_names = {
+    charging = {
+        present   = "present",
+        state     = "status",
+        rate      = "current_now",
+        charge    = "charge_now",
+        capacity  = "charge_full",
+        design    = "charge_full_design",
+        ac_state  = "AC/online",
+        percent   = "capacity",
+    },
+    discharging = {
+        present   = "present",
+        state     = "status",
+        rate      = "power_now",
+        charge    = "energy_now",
+        capacity  = "energy_full",
+        design    = "energy_full_design",
+        ac_state  = "AC/online",
+        percent   = "capacity"
+    }
+}
+
 function battery_widget:get_state()
     local present, capacity, state, rate, charge
     local percent, time, is_charging
 
     local pre = "/sys/class/power_supply/"
     local dir = pre .. self.adapter
-    present   = readfile(dir.."/present")
-    state     = trim(readfile(dir.."/status"):lower())
-    rate      = readfile(dir.."/power_now")
-    charge    = readfile(dir.."/energy_now")
-    capacity  = readfile(dir.."/energy_full")
-    design    = readfile(dir.."/energy_full_design")
-    ac_state  = readfile(pre.."/AC/online")
+
+    local sysfs = sysfs_names.charging
+
+    present   = readfile(dir.."/"..sysfs.present)
+    state     = trim(readfile(dir.."/"..sysfs.state):lower())
+
+    -- avoid failing for each file that might be found under another name.
+    rate      = readfile(dir.."/"..sysfs.rate)
+    if rate == nil then
+        sysfs = sysfs_names.discharging
+        rate  = readfile(dir.."/"..sysfs.rate)
+        if rate == nil then
+            print("Error: no known sysfs files in " .. dir ".")
+        end
+    end
+
+    charge    = readfile(dir.."/"..sysfs.charge)
+    capacity  = readfile(dir.."/"..sysfs.capacity)
+    design    = readfile(dir.."/"..sysfs.design)
+    ac_state  = readfile(pre.."/"..sysfs.ac_state)
+    percent   = readfile(dir.."/"..sysfs.percent)
 
     if state == "unknown" then
         state = "charged"
@@ -96,10 +133,10 @@ function battery_widget:get_state()
     rate     = tonumber(rate)
     charge   = tonumber(charge)
     capacity = tonumber(capacity)
+    percent  = tonumber(percent)
 
     -- loaded percentage
-    percent = nil
-    if charge ~= nil and capacity ~= nil then
+    if percentage == nil and charge ~= nil and capacity ~= nil then
         percent = round(charge * 100 / capacity)
     end
 
