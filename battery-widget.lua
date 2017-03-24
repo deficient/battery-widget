@@ -39,9 +39,14 @@ local function trim(s)
 end
 
 local function substitute(template, context)
-  return (template:gsub("%${([%w_]+)}", function(key)
-    return tostring(context[key] or "Err!")
-  end))
+  if type(template) == "string" then
+    return (template:gsub("%${([%w_]+)}", function(key)
+      return tostring(context[key] or "Err!")
+    end))
+  else
+    -- function / functor:
+    return template(context)
+  end
 end
 
 ------------------------------------------
@@ -201,6 +206,9 @@ function battery_widget:update()
     if ctx.capacity and ctx.design then
         ctx.capacity_percent = round(ctx.capacity/ctx.design*100)
     end
+
+    -- for use in functions
+    ctx.obj = self
 
     -- update text
     self.widget:set_markup(substitute(self.text_template, ctx))
