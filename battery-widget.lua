@@ -130,6 +130,7 @@ function battery_widget:get_state()
     rate     = tonumber(rate)
     charge   = tonumber(charge)
     capacity = tonumber(capacity)
+    design   = tonumber(design)
     ac_state = tonumber(ac_state)
     percent  = tonumber(percent)
 
