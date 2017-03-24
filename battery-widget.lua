@@ -114,14 +114,18 @@ function battery_widget:get_state()
                    and sysfs_names.charging
                    or sysfs_names.discharging)
 
-    present   = readfile(dir.."/"..sysfs.present)
-    state     = trim(readfile(dir.."/"..sysfs.state):lower())
-    rate      = readfile(dir.."/"..sysfs.rate)
-    charge    = readfile(dir.."/"..sysfs.charge)
-    capacity  = readfile(dir.."/"..sysfs.capacity)
-    design    = readfile(dir.."/"..sysfs.design)
-    ac_state  = readfile(pre.."/"..sysfs.ac_state)
-    percent   = readfile(dir.."/"..sysfs.percent)
+    local function read_trim(filename)
+      return trim(readfile(filename))
+    end
+
+    present   = read_trim(dir.."/"..sysfs.present)
+    state     = read_trim(dir.."/"..sysfs.state):lower()
+    rate      = read_trim(dir.."/"..sysfs.rate)
+    charge    = read_trim(dir.."/"..sysfs.charge)
+    capacity  = read_trim(dir.."/"..sysfs.capacity)
+    design    = read_trim(dir.."/"..sysfs.design)
+    ac_state  = read_trim(pre.."/"..sysfs.ac_state)
+    percent   = read_trim(dir.."/"..sysfs.percent)
 
     if state == "unknown" then
         state = "charged"
