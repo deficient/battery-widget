@@ -105,9 +105,6 @@ local sysfs_names = {
 }
 
 function battery_widget:get_state()
-    local present, capacity, state, rate, charge
-    local percent, time, is_charging
-
     local pre   = "/sys/class/power_supply/"
     local dir   = pre .. self.adapter
     local sysfs = (file_exists(dir.."/"..sysfs_names.charging.rate)
@@ -118,109 +115,106 @@ function battery_widget:get_state()
       return trim(readfile(filename))
     end
 
-    state     = read_trim(dir.."/"..sysfs.state):lower()
-    present   = read_trim(dir.."/"..sysfs.present)
-    rate      = read_trim(dir.."/"..sysfs.rate)
-    charge    = read_trim(dir.."/"..sysfs.charge)
-    capacity  = read_trim(dir.."/"..sysfs.capacity)
-    design    = read_trim(dir.."/"..sysfs.design)
-    ac_state  = read_trim(pre.."/"..sysfs.ac_state)
-    percent   = read_trim(dir.."/"..sysfs.percent)
+    local raw = {
+      state     = read_trim(dir.."/"..sysfs.state),
+      present   = read_trim(dir.."/"..sysfs.present),
+      rate      = read_trim(dir.."/"..sysfs.rate),
+      charge    = read_trim(dir.."/"..sysfs.charge),
+      capacity  = read_trim(dir.."/"..sysfs.capacity),
+      design    = read_trim(dir.."/"..sysfs.design),
+      ac_state  = read_trim(pre.."/"..sysfs.ac_state),
+      percent   = read_trim(dir.."/"..sysfs.percent),
+    }
 
-    if state == "unknown" then
-        state = "charged"
+    -- return value
+    local r = {
+      state    = raw.state:lower(),
+      present  = tonumber(raw.present),
+      rate     = tonumber(raw.rate),
+      charge   = tonumber(raw.charge),
+      capacity = tonumber(raw.capacity),
+      design   = tonumber(raw.design),
+      ac_state = tonumber(raw.ac_state),
+      percent  = tonumber(raw.percent),
+    }
+
+    if r.state == "unknown" then
+        r.state = "charged"
     end
 
-    present  = tonumber(present)
-    rate     = tonumber(rate)
-    charge   = tonumber(charge)
-    capacity = tonumber(capacity)
-    design   = tonumber(design)
-    ac_state = tonumber(ac_state)
-    percent  = tonumber(percent)
-
     -- loaded percentage
-    if charge and capacity and not percent then
-        percent = round(charge * 100 / capacity)
+    if r.charge and r.capacity and not r.percent then
+        r.percent = round(r.charge * 100 / r.capacity)
     end
 
     -- estimate time
-    is_charging = 0
-    time = -1
-    if rate ~= 0 and rate ~= nil then
-        if state == "charging" then
-            time = (capacity - charge) / rate
-            is_charging = 1
+    r.is_charging = 0
+    r.time = -1
+    if r.rate ~= 0 and r.rate ~= nil then
+        if r.state == "charging" then
+            r.time = (r.capacity - r.charge) / r.rate
+            r.is_charging = 1
         elseif state == "discharging" or state == nil then
-            time = charge / rate
-            is_charging = -1
+            r.time = r.charge / r.rate
+            r.is_charging = -1
         end
     end
 
-    return percent, ac_state, time, state, is_charging, capacity, design
+    return r
 end
 
 function battery_widget:update()
-    local percent, ac_state, time, state, is_charging, capacity, design = self:get_state()
-    local prefix, text
-    local time_hour, time_minute, time_str, est_postfix
+    local ctx = self:get_state()
 
     -- AC/battery prefix
-    if ac_state == 1 then
-        prefix = self.ac_prefix
-    else
-        prefix = self.battery_prefix
-    end
+    ctx.prefix = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
+    ctx.text   = tostring(ctx.percent or "Err!") .. '%'
 
     -- Percentage
-    -- text =  "⚡ ".. percent .. "%"
-    if percent == nil then
-        text = "Err!%"
-    else
-      text =  percent .. "%"
-      for k,v in ipairs(self.limits) do
-          if percent <= v[1] then
-              text = fg(v[2], text)
+    if ctx.percent then
+      for k, v in ipairs(self.limits) do
+          if ctx.percent <= v[1] then
+              ctx.text = fg(v[2], ctx.text)
               break
           end
       end
     end
 
     -- Time
-    if time == -1 then
-        est_postfix = "..."
+    if ctx.time == -1 then
+        ctx.est_postfix = "..."
     else
-        time_hour = math.floor(time)
-        time_minute = math.floor((time - time_hour) * 60)
-        time_str = ""
-        if time_hour ~= 0 then
-            time_str = time_hour .. "h "
+        ctx.time_hour = math.floor(ctx.time)
+        ctx.time_minute = math.floor((ctx.time - ctx.time_hour) * 60)
+        ctx.time_str = ""
+        if ctx.time_hour ~= 0 then
+            ctx.time_str = ctx.time_hour .. "h "
         end
-        time_str = time_str .. time_minute .. "m"
-        est_postfix = ": "..time_str.." remaining"
+        ctx.time_str = ctx.time_str .. ctx.time_minute .. "m"
+        ctx.est_postfix = ": "..ctx.time_str.." remaining"
     end
 
 
     -- update text
-    self.widget:set_markup(prefix..text)
+    self.widget:set_markup(ctx.prefix..ctx.text)
 
     -- capacity text
-    if capacity ~= nil and design ~= nil then
-        captext = "\nCapacity: " .. round(capacity/design*100) .. "%"
+    if ctx.capacity ~= nil and ctx.design ~= nil then
+        ctx.captext = "\nCapacity: " .. round(ctx.capacity/ctx.design*100) .. "%"
     else
-        captext = "\nCapacity: Err!"
+        ctx.captext = "\nCapacity: Err!"
     end
 
     -- update tooltip
-    if state == nil then
-        state = "Err!"
+    if ctx.state == nil then
+        ctx.state = "Err!"
     end
-    if is_charging == 1 then
-        self.tooltip:set_text("Battery "..state..est_postfix..captext)
-    elseif is_charging == -1 then
-        self.tooltip:set_text("Battery "..state..est_postfix..captext)
+    if ctx.is_charging == 1 then
+        self.tooltip:set_text("Battery "..ctx.state..ctx.est_postfix..ctx.captext)
+    elseif ctx.is_charging == -1 then
+        self.tooltip:set_text("Battery "..ctx.state..ctx.est_postfix..ctx.captext)
     else
-        self.tooltip:set_text("Battery "..state..captext)
+        self.tooltip:set_text("Battery "..ctx.state..ctx.captext)
     end
 end
 
