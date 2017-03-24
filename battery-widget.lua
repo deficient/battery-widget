@@ -43,6 +43,11 @@ local function trim(s)
   return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+local function substitute(template, context)
+  return (template:gsub("%${([%w_]+)}", function(key)
+    return tostring(context[key])
+  end))
+end
 
 ------------------------------------------
 -- Battery widget interface
@@ -63,6 +68,8 @@ function battery_widget:init(args)
         {50, "orange"},
         {100, "green"}
     }
+    self.text_template = args.text_template or "${prefix}${text}"
+    self.tooltip_template = args.tooltip_template or "Battery ${state}${est_postfix}${captext}"
 
     self.widget = wibox.widget.textbox()
     self.widget.set_align("right")
@@ -168,7 +175,8 @@ function battery_widget:update()
 
     -- AC/battery prefix
     ctx.prefix = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
-    ctx.text   = tostring(ctx.percent or "Err!") .. '%'
+    ctx.text   = (ctx.percent or "Err!") .. '%'
+    ctx.state  = ctx.state or "Err!"
 
     -- Percentage
     if ctx.percent then
@@ -194,28 +202,20 @@ function battery_widget:update()
         ctx.est_postfix = ": "..ctx.time_str.." remaining"
     end
 
-
-    -- update text
-    self.widget:set_markup(ctx.prefix..ctx.text)
+    if ctx.is_charging == 0 then
+        ctx.est_postfix = ""
+    end
 
     -- capacity text
-    if ctx.capacity ~= nil and ctx.design ~= nil then
+    if ctx.capacity and ctx.design then
         ctx.captext = "\nCapacity: " .. round(ctx.capacity/ctx.design*100) .. "%"
     else
         ctx.captext = "\nCapacity: Err!"
     end
 
-    -- update tooltip
-    if ctx.state == nil then
-        ctx.state = "Err!"
-    end
-    if ctx.is_charging == 1 then
-        self.tooltip:set_text("Battery "..ctx.state..ctx.est_postfix..ctx.captext)
-    elseif ctx.is_charging == -1 then
-        self.tooltip:set_text("Battery "..ctx.state..ctx.est_postfix..ctx.captext)
-    else
-        self.tooltip:set_text("Battery "..ctx.state..ctx.captext)
-    end
+    -- update text
+    self.widget:set_markup(substitute(self.text_template, ctx))
+    self.tooltip:set_text(substitute(self.tooltip_template, ctx))
 end
 
 return setmetatable(battery_widget, {
