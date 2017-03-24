@@ -25,11 +25,10 @@ local function readfile(command)
     return text
 end
 
-local function fg(color, text)
-    if color == nil then
-        return text
-    else
-        return '<span color="' .. color .. '">' .. text .. '</span>'
+local function color_tags(color)
+    if color
+      then return '<span color="' .. color .. '">', '</span>'
+      else return '', ''
     end
 end
 
@@ -68,7 +67,7 @@ function battery_widget:init(args)
         {50, "orange"},
         {100, "green"}
     }
-    self.text_template = args.text_template or "${prefix}${text}"
+    self.text_template = args.text_template or "${prefix}${color_on}${text}${color_off}"
     self.tooltip_template = args.tooltip_template or "Battery ${state}${est_postfix}${captext}"
 
     self.widget = wibox.widget.textbox()
@@ -179,10 +178,12 @@ function battery_widget:update()
     ctx.state  = ctx.state or "Err!"
 
     -- Percentage
+    ctx.color_on = ""
+    ctx.color_off = ""
     if ctx.percent then
       for k, v in ipairs(self.limits) do
           if ctx.percent <= v[1] then
-              ctx.text = fg(v[2], ctx.text)
+              ctx.color_on, ctx.color_off = color_tags(v[2])
               break
           end
       end
