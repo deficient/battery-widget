@@ -10,16 +10,13 @@ local wibox = require("wibox")
 
 local function file_exists(command)
     local f = io.open(command)
-    if not f then return false end
-    f:close()
-    return true
+    if f then f:close() end
+    return f and true or false
 end
 
 local function readfile(command)
     local file = io.open(command)
-    if file == nil then
-        return nil
-    end
+    if not file then return nil end
     local text = file:read('*all')
     file:close()
     return text
@@ -37,9 +34,8 @@ local function round(value)
 end
 
 local function trim(s)
-    if s == nil then return nil end
-  -- from PiL2 20.4
-  return (s:gsub("^%s*(.-)%s*$", "%1"))
+    if not s then return nil end
+    return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
 local function substitute(template, context)
@@ -53,40 +49,6 @@ end
 ------------------------------------------
 
 local battery_widget = {}
-
-function battery_widget:new(args)
-    return setmetatable({}, {__index = self}):init(args)
-end
-
-function battery_widget:init(args)
-    self.adapter = args.adapter or "BAT0"
-    self.ac_prefix = args.ac_prefix or "AC: "
-    self.battery_prefix = args.battery_prefix or "Bat: "
-    self.limits = args.limits or {
-        {25, "red"},
-        {50, "orange"},
-        {100, "green"}
-    }
-    self.text_template = args.text_template or "${prefix}${color_on}${percent}%${color_off}"
-    self.tooltip_template = args.tooltip_template or "Battery ${state}${est_postfix}${captext}"
-
-    self.widget = wibox.widget.textbox()
-    self.widget.set_align("right")
-    self.tooltip = awful.tooltip({objects={self.widget}})
-
-    self.widget:buttons(awful.util.table.join(
-        awful.button({ }, 1, function() self:update() end),
-        awful.button({ }, 3, function() self:update() end)
-    ))
-
-    self.timer = gears.timer({ timeout = args.timeout or 10 })
-    self.timer:connect_signal("timeout", function() self:update() end)
-    self.timer:start()
-    self:update()
-
-    return self
-end
-
 local sysfs_names = {
     charging = {
         present   = "present",
@@ -107,8 +69,44 @@ local sysfs_names = {
         design    = "energy_full_design",
         ac_state  = "AC/online",
         percent   = "capacity"
-    }
+    },
 }
+
+function battery_widget:new(args)
+    return setmetatable({}, {__index = self}):init(args)
+end
+
+function battery_widget:init(args)
+    self.adapter = args.adapter or "BAT0"
+    self.ac_prefix = args.ac_prefix or "AC: "
+    self.battery_prefix = args.battery_prefix or "Bat: "
+    self.limits = args.limits or {
+        { 25, "red"   },
+        { 50, "orange"},
+        {100, "green" }
+    }
+
+    self.text_template = args.text_template or (
+        "${AC_BAT}${color_on}${percent}%${color_off}")
+    self.tooltip_template = args.tooltip_template or (
+        "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%")
+
+    self.widget = wibox.widget.textbox()
+    self.widget.set_align("right")
+    self.tooltip = awful.tooltip({objects={self.widget}})
+
+    self.widget:buttons(awful.util.table.join(
+        awful.button({ }, 1, function() self:update() end),
+        awful.button({ }, 3, function() self:update() end)
+    ))
+
+    self.timer = gears.timer({ timeout = args.timeout or 10 })
+    self.timer:connect_signal("timeout", function() self:update() end)
+    self.timer:start()
+    self:update()
+
+    return self
+end
 
 function battery_widget:get_state()
     local pre   = "/sys/class/power_supply/"
@@ -148,22 +146,8 @@ function battery_widget:get_state()
         r.state = "charged"
     end
 
-    -- loaded percentage
-    if r.charge and r.capacity and not r.percent then
-        r.percent = round(r.charge * 100 / r.capacity)
-    end
-
-    -- estimate time
-    r.is_charging = 0
-    r.time = -1
-    if r.rate ~= 0 and r.rate ~= nil then
-        if r.state == "charging" then
-            r.time = (r.capacity - r.charge) / r.rate
-            r.is_charging = 1
-        elseif state == "discharging" or state == nil then
-            r.time = r.charge / r.rate
-            r.is_charging = -1
-        end
+    if r.charge and r.capacity then
+        r.percent = r.percent or round(r.charge * 100 / r.capacity)
     end
 
     return r
@@ -173,7 +157,7 @@ function battery_widget:update()
     local ctx = self:get_state()
 
     -- AC/battery prefix
-    ctx.prefix  = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
+    ctx.AC_BAT  = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
     ctx.percent = ctx.percent or "Err!"
     ctx.state   = ctx.state or "Err!"
 
@@ -189,29 +173,36 @@ function battery_widget:update()
       end
     end
 
-    -- Time
-    if ctx.time == -1 then
-        ctx.est_postfix = "..."
-    else
-        ctx.time_hour = math.floor(ctx.time)
-        ctx.time_minute = math.floor((ctx.time - ctx.time_hour) * 60)
-        ctx.time_str = ""
-        if ctx.time_hour ~= 0 then
-            ctx.time_str = ctx.time_hour .. "h "
+    -- estimate time
+    ctx.charge_dir = 0    -- +1|0|-1 -> charging|static|discharging
+    ctx.time_left  = nil  -- time until charging/discharging complete
+    ctx.time_text  = ""
+    ctx.time_est   = ""
+
+    if ctx.rate and ctx.rate ~= 0 then
+        if not ctx.state or ctx.state == "discharging" then
+            ctx.charge_dir = -1
+            ctx.time_left = ctx.charge / ctx.rate
+        elseif ctx.state == "charging" then
+            ctx.charge_dir = 1
+            ctx.time_left = (ctx.capacity - ctx.charge) / ctx.rate
         end
-        ctx.time_str = ctx.time_str .. ctx.time_minute .. "m"
-        ctx.est_postfix = ": "..ctx.time_str.." remaining"
     end
 
-    if ctx.is_charging == 0 then
-        ctx.est_postfix = ""
+    if ctx.time_left then
+        ctx.hours   = math.floor((ctx.time))
+        ctx.minutes = math.floor((ctx.time - ctx.hours) * 60)
+        if ctx.hours == 0
+          then ctx.time_text = ctx.hours .. "h " .. ctx.minutes .. "m"
+          else ctx.time_text =                      ctx.minutes .. "m"
+        end
+        ctx.time_est = ": " .. ctx.time_text .. " remaining"
     end
 
     -- capacity text
-    if ctx.capacity and ctx.design then
-        ctx.captext = "\nCapacity: " .. round(ctx.capacity/ctx.design*100) .. "%"
-    else
-        ctx.captext = "\nCapacity: Err!"
+    if ctx.capacity and ctx.design
+      then ctx.capacity_percent = round(ctx.capacity/ctx.design*100)
+      else ctx.capacity_percent = "Err!"
     end
 
     -- update text
