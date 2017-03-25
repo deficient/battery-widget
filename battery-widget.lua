@@ -8,6 +8,8 @@ local wibox = require("wibox")
 -- Private utility functions
 ------------------------------------------
 
+local tolower = string.lower
+
 local function file_exists(command)
     local f = io.open(command)
     if f then f:close() end
@@ -124,35 +126,24 @@ function battery_widget:get_state()
       return trim(readfile(filename))
     end
 
-    local raw = {
-      state     = read_trim(dir.."/"..sysfs.state),
-      present   = read_trim(dir.."/"..sysfs.present),
-      rate      = read_trim(dir.."/"..sysfs.rate),
-      charge    = read_trim(dir.."/"..sysfs.charge),
-      capacity  = read_trim(dir.."/"..sysfs.capacity),
-      design    = read_trim(dir.."/"..sysfs.design),
-      ac_state  = read_trim(pre.."/"..sysfs.ac_state),
-      percent   = read_trim(dir.."/"..sysfs.percent),
-    }
-
     -- return value
     local r = {
-      state    = raw.state:lower(),
-      present  = tonumber(raw.present),
-      rate     = tonumber(raw.rate),
-      charge   = tonumber(raw.charge),
-      capacity = tonumber(raw.capacity),
-      design   = tonumber(raw.design),
-      ac_state = tonumber(raw.ac_state),
-      percent  = tonumber(raw.percent),
+      state     = tolower (read_trim(dir.."/"..sysfs.state)),
+      present   = tonumber(read_trim(dir.."/"..sysfs.present)),
+      rate      = tonumber(read_trim(dir.."/"..sysfs.rate)),
+      charge    = tonumber(read_trim(dir.."/"..sysfs.charge)),
+      capacity  = tonumber(read_trim(dir.."/"..sysfs.capacity)),
+      design    = tonumber(read_trim(dir.."/"..sysfs.design)),
+      ac_state  = tonumber(read_trim(pre.."/"..sysfs.ac_state)),
+      percent   = tonumber(read_trim(dir.."/"..sysfs.percent)),
     }
 
     if r.state == "unknown" then
         r.state = "charged"
     end
 
-    if r.charge and r.capacity then
-        r.percent = r.percent or round(r.charge * 100 / r.capacity)
+    if r.percent == nil and r.charge and r.capacity then
+        r.percent = round(r.charge * 100 / r.capacity)
     end
 
     return r
