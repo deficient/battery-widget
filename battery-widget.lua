@@ -91,9 +91,9 @@ function battery_widget:init(args)
         {100, "green" }
     }
 
-    self.text_template = args.text_template or (
+    self.widget_text = args.widget_text or (
         "${AC_BAT}${color_on}${percent}%${color_off}")
-    self.tooltip_template = args.tooltip_template or (
+    self.tooltip_text = args.tooltip_text or (
         "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%")
 
     self.widget = wibox.widget.textbox()
@@ -211,8 +211,8 @@ function battery_widget:update()
     ctx.obj = self
 
     -- update text
-    self.widget:set_markup(substitute(self.text_template, ctx))
-    self.tooltip:set_text(substitute(self.tooltip_template, ctx))
+    self.widget:set_markup(substitute(self.widget_text, ctx))
+    self.tooltip:set_text(substitute(self.tooltip_text, ctx))
 end
 
 return setmetatable(battery_widget, {
