@@ -116,9 +116,9 @@ function battery_widget:init(args)
 end
 
 function battery_widget:get_state()
-    local pre   = "/sys/class/power_supply/"
-    local dir   = pre .. self.adapter
-    local sysfs = (file_exists(dir.."/"..sysfs_names.charging.rate)
+    local pow   = "/sys/class/power_supply/"
+    local bat   = pow .. self.adapter
+    local sysfs = (file_exists(bat.."/"..sysfs_names.charging.rate)
                    and sysfs_names.charging
                    or sysfs_names.discharging)
 
@@ -128,14 +128,14 @@ function battery_widget:get_state()
 
     -- return value
     local r = {
-      state     = tolower (read_trim(dir.."/"..sysfs.state)),
-      present   = tonumber(read_trim(dir.."/"..sysfs.present)),
-      rate      = tonumber(read_trim(dir.."/"..sysfs.rate)),
-      charge    = tonumber(read_trim(dir.."/"..sysfs.charge)),
-      capacity  = tonumber(read_trim(dir.."/"..sysfs.capacity)),
-      design    = tonumber(read_trim(dir.."/"..sysfs.design)),
-      ac_state  = tonumber(read_trim(pre.."/"..sysfs.ac_state)),
-      percent   = tonumber(read_trim(dir.."/"..sysfs.percent)),
+      state     = tolower (read_trim(bat.."/"..sysfs.state)),
+      present   = tonumber(read_trim(bat.."/"..sysfs.present)),
+      rate      = tonumber(read_trim(bat.."/"..sysfs.rate)),
+      charge    = tonumber(read_trim(bat.."/"..sysfs.charge)),
+      capacity  = tonumber(read_trim(bat.."/"..sysfs.capacity)),
+      design    = tonumber(read_trim(bat.."/"..sysfs.design)),
+      ac_state  = tonumber(read_trim(pow.."/"..sysfs.ac_state)),
+      percent   = tonumber(read_trim(bat.."/"..sysfs.percent)),
     }
 
     if r.state == "unknown" then
