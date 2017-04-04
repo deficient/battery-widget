@@ -13,8 +13,7 @@ Drop the script into your awesome config folder. Suggestion:
 
 ```bash
 cd ~/.config/awesome
-git clone https://github.com/coldfix/awesome.battery-widget.git
-ln -s awesome.battery-widget/battery-widget.lua
+git clone https://github.com/coldfix/awesome.battery-widget.git battery-widget
 ```
 
 
