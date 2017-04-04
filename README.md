@@ -4,7 +4,8 @@
 
 Battery indicator widget for awesome window manager.
 
-Uses `/sys/class/power_supply` for status information.
+Uses `/sys/class/power_supply` for status information, and `acpi_listen` when
+`listen` is enabled.
 
 
 ### Installation
@@ -26,8 +27,8 @@ In your `rc.lua`:
 local battery_widget = require("battery-widget")
 
 
--- define your volume control
-battery = battery_widget({adapter = "BAT0"})
+-- define your battery widget
+battery = battery_widget({adapter = "BAT0", listen = false})
 
 
 -- add the widget to your wibox
