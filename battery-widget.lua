@@ -5,6 +5,7 @@ local gears = require("gears")
 local wibox = require("wibox")
 
 local timer = gears.timer or timer
+local watch = awful.spawn and awful.spawn.with_line_callback
 
 ------------------------------------------
 -- Private utility functions
@@ -114,8 +115,8 @@ function battery_widget:init(args)
     self.timer:start()
     self:update()
 
-    if args.listen then
-        self.listener = awful.spawn.with_line_callback("acpi_listen", {
+    if (args.listen or args.listen == nil) and watch then
+        self.listener = watch("acpi_listen", {
             stdout = function(line)
                 self:update()
             end,
