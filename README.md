@@ -39,4 +39,4 @@ right_layout:add(battery.widget)
 
 ### Requirements
 
-* [awesome 3.5](http://awesome.naquadah.org/)
+* [awesome 4.0](http://awesome.naquadah.org/) and possibly also 3.5

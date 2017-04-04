@@ -4,6 +4,8 @@ local awful = require("awful")
 local gears = require("gears")
 local wibox = require("wibox")
 
+local timer = gears.timer or timer
+
 ------------------------------------------
 -- Private utility functions
 ------------------------------------------
@@ -107,7 +109,7 @@ function battery_widget:init(args)
         awful.button({ }, 3, function() self:update() end)
     ))
 
-    self.timer = gears.timer({ timeout = args.timeout or 10 })
+    self.timer = timer({ timeout = args.timeout or 10 })
     self.timer:connect_signal("timeout", function() self:update() end)
     self.timer:start()
     self:update()
