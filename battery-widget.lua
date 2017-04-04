@@ -114,6 +114,18 @@ function battery_widget:init(args)
     self.timer:start()
     self:update()
 
+    if args.listen then
+        self.listener = awful.spawn.with_line_callback("acpi_listen", {
+            stdout = function(line)
+                self:update()
+            end,
+        })
+
+        awesome.connect_signal("exit", function()
+            awesome.kill(self.listener, 9)
+        end)
+    end
+
     return self
 end
 
