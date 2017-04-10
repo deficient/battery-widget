@@ -39,8 +39,7 @@ right_layout:add(battery.widget)
 
 #### Usage Options
 
-```
-local battery_widget = require("battery-widget")
+```lua
 battery_widget({
     adapter = "BAT0",
     ac_prefix = "AC: ",
