@@ -49,6 +49,7 @@ battery_widget({
         { 50, "orange"},
         {100, "green" }
     },
+    listen=true,
     timeout = 10,
     widget_text = "${AC_BAT}${color_on}${percent}%${color_off}",
     tooltip_text = "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%"
@@ -67,8 +68,11 @@ The prefix to populate `${AC_BAT}` when your computer is using battery power.
 `limits`  
 The colors that the percentage changes to, as well as the upper-bound limit of when it will change. Ex. `{100, "green"}` means any percentage lower than 100 is colored green.
 
+`listen`  
+Tells the widget to listen to updates via `acpi_listen`. When an event is fired, the widget updates.
+
 `timeout`  
-The time interval that the widget waits before it refreshes itself, in seconds.
+The time interval that the widget waits before it updates itself, in seconds.
 
 `widget_text`, `tooltip_text`  
 The text which shows up on the toolbar and when you highlight the widget, respectively. Please refer to function `battery_widget:update()` for other interpolatable variables.
