@@ -37,7 +37,7 @@ right_layout:add(battery.widget)
 ...
 ```
 
-#### Usage Options
+### Usage Options
 
 ```lua
 battery_widget({
