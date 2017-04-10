@@ -28,7 +28,7 @@ local battery_widget = require("battery-widget")
 
 
 -- define your battery widget
-battery = battery_widget({adapter = "BAT0", listen = false})
+battery = battery_widget({adapter = "BAT0"})
 
 
 -- add the widget to your wibox
