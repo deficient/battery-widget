@@ -14,7 +14,7 @@ Drop the script into your awesome config folder. Suggestion:
 
 ```bash
 cd ~/.config/awesome
-git clone https://github.com/coldfix/awesome-battery-widget.git
+git clone https://github.com/deficient/battery-widget.git
 ```
 
 
@@ -24,7 +24,7 @@ In your `rc.lua`:
 
 ```lua
 -- load the widget code
-local battery_widget = require("awesome-battery-widget")
+local battery_widget = require("battery-widget")
 
 
 -- define your battery widget
