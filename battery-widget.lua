@@ -29,13 +29,13 @@ end
 
 local function color_tags(color)
     if color
-      then return '<span color="' .. color .. '">', '</span>'
-      else return '', ''
+        then return '<span color="' .. color .. '">', '</span>'
+        else return '', ''
     end
 end
 
 local function round(value)
-  return math.floor(value + 0.5)
+    return math.floor(value + 0.5)
 end
 
 local function trim(s)
@@ -44,14 +44,14 @@ local function trim(s)
 end
 
 local function substitute(template, context)
-  if type(template) == "string" then
-    return (template:gsub("%${([%w_]+)}", function(key)
-      return tostring(context[key] or "Err!")
-    end))
-  else
-    -- function / functor:
-    return template(context)
-  end
+    if type(template) == "string" then
+        return (template:gsub("%${([%w_]+)}", function(key)
+            return tostring(context[key] or "Err!")
+        end))
+    else
+        -- function / functor:
+        return template(context)
+    end
 end
 
 ------------------------------------------
@@ -117,11 +117,8 @@ function battery_widget:init(args)
 
     if (args.listen or args.listen == nil) and watch then
         self.listener = watch("acpi_listen", {
-            stdout = function(line)
-                self:update()
-            end,
+            stdout = function(line) self:update() end,
         })
-
         awesome.connect_signal("exit", function()
             awesome.kill(self.listener, 9)
         end)
@@ -138,19 +135,19 @@ function battery_widget:get_state()
                    or sysfs_names.discharging)
 
     local function read_trim(filename)
-      return trim(readfile(filename))
+        return trim(readfile(filename))
     end
 
     -- return value
     local r = {
-      state     = tolower (read_trim(bat.."/"..sysfs.state)),
-      present   = tonumber(read_trim(bat.."/"..sysfs.present)),
-      rate      = tonumber(read_trim(bat.."/"..sysfs.rate)),
-      charge    = tonumber(read_trim(bat.."/"..sysfs.charge)),
-      capacity  = tonumber(read_trim(bat.."/"..sysfs.capacity)),
-      design    = tonumber(read_trim(bat.."/"..sysfs.design)),
-      ac_state  = tonumber(read_trim(pow.."/"..sysfs.ac_state)),
-      percent   = tonumber(read_trim(bat.."/"..sysfs.percent)),
+        state     = tolower (read_trim(bat.."/"..sysfs.state)),
+        present   = tonumber(read_trim(bat.."/"..sysfs.present)),
+        rate      = tonumber(read_trim(bat.."/"..sysfs.rate)),
+        charge    = tonumber(read_trim(bat.."/"..sysfs.charge)),
+        capacity  = tonumber(read_trim(bat.."/"..sysfs.capacity)),
+        design    = tonumber(read_trim(bat.."/"..sysfs.design)),
+        ac_state  = tonumber(read_trim(pow.."/"..sysfs.ac_state)),
+        percent   = tonumber(read_trim(bat.."/"..sysfs.percent)),
     }
 
     if r.state == "unknown" then
@@ -174,12 +171,12 @@ function battery_widget:update()
     ctx.color_on = ""
     ctx.color_off = ""
     if ctx.percent then
-      for k, v in ipairs(self.limits) do
-          if ctx.percent <= v[1] then
-              ctx.color_on, ctx.color_off = color_tags(v[2])
-              break
-          end
-      end
+        for k, v in ipairs(self.limits) do
+            if ctx.percent <= v[1] then
+                ctx.color_on, ctx.color_off = color_tags(v[2])
+                break
+            end
+        end
     end
 
     -- estimate time
@@ -202,8 +199,8 @@ function battery_widget:update()
         ctx.hours   = math.floor((ctx.time_left))
         ctx.minutes = math.floor((ctx.time_left - ctx.hours) * 60)
         if ctx.hours > 0
-          then ctx.time_text = ctx.hours .. "h " .. ctx.minutes .. "m"
-          else ctx.time_text =                      ctx.minutes .. "m"
+            then ctx.time_text = ctx.hours .. "h " .. ctx.minutes .. "m"
+            else ctx.time_text =                      ctx.minutes .. "m"
         end
         ctx.time_est = ": " .. ctx.time_text .. " remaining"
     end
@@ -222,5 +219,5 @@ function battery_widget:update()
 end
 
 return setmetatable(battery_widget, {
-  __call = battery_widget.new,
+    __call = battery_widget.new,
 })
