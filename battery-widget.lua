@@ -67,7 +67,7 @@ local sysfs_names = {
         charge    = "charge_now",
         capacity  = "charge_full",
         design    = "charge_full_design",
-        ac_state  = "../AC/online",
+        ac_state  = "AC/online",
         percent   = "capacity",
     },
     discharging = {
@@ -77,7 +77,7 @@ local sysfs_names = {
         charge    = "energy_now",
         capacity  = "energy_full",
         design    = "energy_full_design",
-        ac_state  = "../AC/online",
+        ac_state  = "AC/online",
         percent   = "capacity"
     },
 }
@@ -146,7 +146,7 @@ function battery_widget:get_state()
         charge    = tonumber(read_trim(bat.."/"..sysfs.charge)),
         capacity  = tonumber(read_trim(bat.."/"..sysfs.capacity)),
         design    = tonumber(read_trim(bat.."/"..sysfs.design)),
-        ac_state  = tonumber(read_trim(bat.."/"..sysfs.ac_state)),
+        ac_state  = tonumber(read_trim(pow.."/"..sysfs.ac_state)),
         percent   = tonumber(read_trim(bat.."/"..sysfs.percent)),
     }
 
