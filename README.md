@@ -39,21 +39,21 @@ right_layout:add(battery.widget)
 ```
 
 If you have multiple batteries or use the same `rc.lua` on multiple devices with differing numbers of batteries:
+
 ```lua
 ...
 -- creates an empty container wibox, which can be added to your panel even if its empty
-batteries={layout=wibox.layout.fixed.horizontal}
-    -- searches for batteries on the actual device
-    local batteries_found = io.popen("find /sys/class/power_supply -mindepth 1 -maxdepth 1  -regex '.*BAT.*'|sed 's_.*/__g'")
-    while true do
-      local bat = batteries_found:read()
-      if not bat then break end
-      table.insert(batteries, battery_widget({adapter = bat}))
+local batteries = { layout = wibox.layout.fixed.horizontal }
+for adapter in io.popen("ls -1 /sys/class/power_supply"):lines() do
+    if adapter:match("BAT") then
+        table.insert(batteries, battery_widget({adapter = adapter}))
     end
+end
 ...
+
 -- add 'batteries' to the widget container
 s.mywibox:setup {
-layout = wibox.layout.align.horizontal,
+    layout = wibox.layout.align.horizontal,
     { -- Left widgets
         ...,
     },
@@ -63,7 +63,6 @@ layout = wibox.layout.align.horizontal,
         batteries,
     },
 }
-...
 ```
 
 ### Usage Options
