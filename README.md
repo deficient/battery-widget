@@ -23,13 +23,12 @@ git clone https://github.com/deficient/battery-widget.git
 In your `rc.lua`:
 
 ```lua
--- load the widget code
 local battery_widget = require("battery-widget")
 
 
 -- define your battery widget (you may need to use another adapter name as in
 -- your /sys/class/power_supply)
-battery = battery_widget({adapter = "BAT0"})
+local battery = battery_widget({adapter = "BAT0"})
 
 
 -- add the widget to your wibox
