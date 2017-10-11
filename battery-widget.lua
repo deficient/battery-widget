@@ -86,6 +86,16 @@ function battery_widget:new(args)
     return setmetatable({}, {__index = self}):init(args)
 end
 
+function battery_widget:discover()
+    local adapters = {}
+    for adapter in io.popen("ls -1 /sys/class/power_supply"):lines() do
+        if adapter:match("BAT") then
+            table.insert(adapters, adapter)
+        end
+    end
+    return adapters
+end
+
 function battery_widget:init(args)
     self.adapter = args.adapter or "BAT0"
     self.ac_prefix = args.ac_prefix or "AC: "

@@ -43,10 +43,8 @@ If you have multiple batteries or use the same `rc.lua` on multiple devices with
 ...
 -- creates an empty container wibox, which can be added to your panel even if its empty
 local batteries = { layout = wibox.layout.fixed.horizontal }
-for adapter in io.popen("ls -1 /sys/class/power_supply"):lines() do
-    if adapter:match("BAT") then
-        table.insert(batteries, battery_widget({adapter = adapter}))
-    end
+for i, adapter in ipairs(battery_widget:discover()) do
+    table.insert(batteries, battery_widget({adapter = adapter}))
 end
 ...
 
