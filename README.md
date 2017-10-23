@@ -85,10 +85,10 @@ battery_widget({
 The pointer located inside of `/sys/class/power_supply` which corresponds to your battery's status.
 
 `ac_prefix`  
-The prefix to populate `${AC_BAT}` when your computer is using ac power.
+The prefix to populate `${AC_BAT}` when your computer is using ac power. If your font supports unicode characters, you could use "🔌".
 
 `battery_prefix`  
-The prefix to populate `${AC_BAT}` when your computer is using battery power.
+The prefix to populate `${AC_BAT}` when your computer is using battery power. If your font supports unicode characters, you could use "🔋".
 
 `limits`  
 The colors that the percentage changes to, as well as the upper-bound limit of when it will change. Ex. `{100, "green"}` means any percentage lower than 100 is colored green.
