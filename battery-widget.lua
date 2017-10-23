@@ -98,8 +98,8 @@ end
 
 function battery_widget:init(args)
     self.adapter = args.adapter or "BAT0"
-    self.ac_prefix = args.ac_prefix or "AC: "
-    self.battery_prefix = args.battery_prefix or "Bat: "
+    self.ac_prefix = args.ac_prefix or "🔌 "
+    self.battery_prefix = args.battery_prefix or "🔋 "
     self.limits = args.limits or {
         { 25, "red"   },
         { 50, "orange"},

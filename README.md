@@ -67,8 +67,8 @@ s.mywibox:setup {
 ```lua
 battery_widget({
     adapter = "BAT0",
-    ac_prefix = "AC: ",
-    battery_prefix = "Bat: ",
+    ac_prefix = "🔌 ",
+    battery_prefix = "🔋 ",
     limits = {
         { 25, "red"   },
         { 50, "orange"},
@@ -106,4 +106,3 @@ The text which shows up on the toolbar and when you highlight the widget, respec
 ### Requirements
 
 * [awesome 4.0](http://awesome.naquadah.org/) and possibly also 3.5
-
