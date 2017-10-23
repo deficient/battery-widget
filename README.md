@@ -77,6 +77,7 @@ battery_widget({
     listen=true,
     timeout = 10,
     widget_text = "${AC_BAT}${color_on}${percent}%${color_off}",
+    widget_font = "",
     tooltip_text = "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%"
 })
 ```
@@ -102,6 +103,8 @@ The time interval that the widget waits before it updates itself, in seconds.
 `widget_text`, `tooltip_text`  
 The text which shows up on the toolbar and when you highlight the widget, respectively. Please refer to function `battery_widget:update()` for other interpolatable variables.
 
+`widget_font`
+The font description used for the widget text, for instance "Deja Vu Sans Mono 16". If this is empty or unspecified, the default font will be used.
 
 ### Requirements
 
