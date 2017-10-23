@@ -113,6 +113,7 @@ function battery_widget:init(args)
 
     self.widget = wibox.widget.textbox()
     self.widget.set_align("right")
+    self.widget.font = args.widget_font
     self.tooltip = awful.tooltip({objects={self.widget}})
 
     self.widget:buttons(awful.util.table.join(
