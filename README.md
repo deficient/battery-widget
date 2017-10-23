@@ -77,6 +77,7 @@ battery_widget({
     listen=true,
     timeout = 10,
     widget_text = "${AC_BAT}${color_on}${percent}%${color_off}",
+    widget_font = "",
     tooltip_text = "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%"
 })
 ```
@@ -85,10 +86,10 @@ battery_widget({
 The pointer located inside of `/sys/class/power_supply` which corresponds to your battery's status.
 
 `ac_prefix`  
-The prefix to populate `${AC_BAT}` when your computer is using ac power.
+The prefix to populate `${AC_BAT}` when your computer is using ac power. If your font supports unicode characters, you could use "🔌".
 
 `battery_prefix`  
-The prefix to populate `${AC_BAT}` when your computer is using battery power.
+The prefix to populate `${AC_BAT}` when your computer is using battery power. If your font supports unicode characters, you could use "🔋".
 
 `limits`  
 The colors that the percentage changes to, as well as the upper-bound limit of when it will change. Ex. `{100, "green"}` means any percentage lower than 100 is colored green.
@@ -102,6 +103,8 @@ The time interval that the widget waits before it updates itself, in seconds.
 `widget_text`, `tooltip_text`  
 The text which shows up on the toolbar and when you highlight the widget, respectively. Please refer to function `battery_widget:update()` for other interpolatable variables.
 
+`widget_font`
+The font description used for the widget text. If this is empty or unspecified, the default font will be used.
 
 ### Requirements
 
