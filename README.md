@@ -64,6 +64,8 @@ s.mywibox:setup {
 
 ### Usage Options
 
+Full example:
+
 ```lua
 battery_widget({
     adapter = "BAT0",
@@ -74,10 +76,10 @@ battery_widget({
         { 50, "orange"},
         {100, "green" }
     },
-    listen=true,
+    listen = true,
     timeout = 10,
     widget_text = "${AC_BAT}${color_on}${percent}%${color_off}",
-    widget_font = "",
+    widget_font = "Deja Vu Sans Mono 16",
     tooltip_text = "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%"
 })
 ```
