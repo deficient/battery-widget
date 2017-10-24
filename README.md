@@ -82,25 +82,25 @@ battery_widget({
 })
 ```
 
-`adapter`  
+`adapter`
 The pointer located inside of `/sys/class/power_supply` which corresponds to your battery's status.
 
-`ac_prefix`  
+`ac_prefix`
 The prefix to populate `${AC_BAT}` when your computer is using ac power. If your font supports unicode characters, you could use "🔌".
 
-`battery_prefix`  
+`battery_prefix`
 The prefix to populate `${AC_BAT}` when your computer is using battery power. If your font supports unicode characters, you could use "🔋".
 
-`limits`  
+`limits`
 The colors that the percentage changes to, as well as the upper-bound limit of when it will change. Ex. `{100, "green"}` means any percentage lower than 100 is colored green.
 
-`listen`  
+`listen`
 Tells the widget to listen to updates via `acpi_listen`. When an event is fired, the widget updates.
 
-`timeout`  
+`timeout`
 The time interval that the widget waits before it updates itself, in seconds.
 
-`widget_text`, `tooltip_text`  
+`widget_text`, `tooltip_text`
 The text which shows up on the toolbar and when you highlight the widget, respectively. Please refer to function `battery_widget:update()` for other interpolatable variables.
 
 `widget_font`
