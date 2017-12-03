@@ -80,7 +80,11 @@ battery_widget({
     timeout = 10,
     widget_text = "${AC_BAT}${color_on}${percent}%${color_off}",
     widget_font = "Deja Vu Sans Mono 16",
-    tooltip_text = "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%"
+    tooltip_text = "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%",
+    alert_threshold = 5,
+    alert_timeout = 0,
+    alert_title = "Low battery !",
+    alert_text = "${AC_BAT}${time_est}"
 })
 ```
 
@@ -107,6 +111,15 @@ The text which shows up on the toolbar and when you highlight the widget, respec
 
 `widget_font`
 The font description used for the widget text, for instance "Deja Vu Sans Mono 16". If this is empty or unspecified, the default font will be used.
+
+`alert_threshold`
+The percentage used as the maximum value at which an alert will be generated, `-1` to disable alerts. Once the alert is dismissed (or expired) it will not show up again until the battery has been charging.
+
+`alert_timeout`
+The time after which the alert expire, `0` for no timeout.
+
+`alert_title`, `alert_text`
+The text which shows up on the alert notification, respectively the title and body text.
 
 ### Requirements
 
