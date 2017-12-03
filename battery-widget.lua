@@ -3,6 +3,7 @@
 local awful = require("awful")
 local gears = require("gears")
 local wibox = require("wibox")
+local naughty = require("naughty")
 
 local timer = gears.timer or timer
 local watch = awful.spawn and awful.spawn.with_line_callback
@@ -110,6 +111,11 @@ function battery_widget:init(args)
         "${AC_BAT}${color_on}${percent}%${color_off}")
     self.tooltip_text = args.tooltip_text or (
         "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%")
+
+    self.alert_threshold = args.alert_threshold or 5
+    self.alert_timeout = args.alert_timeout or 0
+    self.alert_title = args.alert_title or "Low battery !"
+    self.alert_text = args.alert_text or "${AC_BAT}${time_est}"
 
     self.widget = wibox.widget.textbox()
     self.widget.set_align("right")
@@ -227,6 +233,35 @@ function battery_widget:update()
     -- update text
     self.widget:set_markup(substitute(self.widget_text, ctx))
     self.tooltip:set_text(substitute(self.tooltip_text, ctx))
+
+    -- low battery notification
+    if ctx.state == "discharging" and ctx.percent then
+	if ctx.percent <= self.alert_threshold then
+            self:notify(substitute(self.alert_title, ctx),
+                        substitute(self.alert_text, ctx))
+        end
+    else
+        if naughty and self.alert then
+            naughty.destroy(self.alert,
+                           naughty.notificationClosedReason.dismissedByCommand)
+            self.alert = nil
+        end
+    end
+end
+
+function battery_widget:notify(title, text)
+    if naughty then
+        if self.alert then
+            naughty.replace_text(self.alert, title, text)
+        else
+            self.alert = naughty.notify({
+                title = title,
+                text = text,
+                preset = naughty.config.presets.critical,
+                timeout = self.alert_timeout
+            })
+        end
+    end
 end
 
 return setmetatable(battery_widget, {
