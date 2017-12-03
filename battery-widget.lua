@@ -235,32 +235,33 @@ function battery_widget:update()
     self.tooltip:set_text(substitute(self.tooltip_text, ctx))
 
     -- low battery notification
-    if ctx.state == "discharging" and ctx.percent then
-	if ctx.percent <= self.alert_threshold then
-            self:notify(substitute(self.alert_title, ctx),
-                        substitute(self.alert_text, ctx))
-        end
-    else
-        if naughty and self.alert then
-            naughty.destroy(self.alert,
-                           naughty.notificationClosedReason.dismissedByCommand)
-            self.alert = nil
+    if naughty then
+        if ctx.state == "discharging" then
+            if ctx.percent and ctx.percent <= self.alert_threshold then
+                self:notify(substitute(self.alert_title, ctx),
+                            substitute(self.alert_text, ctx))
+            end
+        else
+            if self.alert then
+                naughty.destroy(
+                    self.alert,
+                    naughty.notificationClosedReason.dismissedByCommand)
+                self.alert = nil
+            end
         end
     end
 end
 
 function battery_widget:notify(title, text)
-    if naughty then
-        if self.alert then
-            naughty.replace_text(self.alert, title, text)
-        else
-            self.alert = naughty.notify({
-                title = title,
-                text = text,
-                preset = naughty.config.presets.critical,
-                timeout = self.alert_timeout
-            })
-        end
+    if self.alert then
+        naughty.replace_text(self.alert, title, text)
+    else
+        self.alert = naughty.notify({
+            title = title,
+            text = text,
+            preset = naughty.config.presets.critical,
+            timeout = self.alert_timeout
+        })
     end
 end
 
