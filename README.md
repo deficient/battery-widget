@@ -4,6 +4,8 @@
 
 Battery indicator widget for awesome window manager.
 
+![Screenshot](/screenshot.png?raw=true "Screenshot")
+
 Uses `/sys/class/power_supply` for status information, and `acpi_listen` when
 `listen` is enabled.
 
