@@ -1,22 +1,27 @@
 ## awesome.battery-widget
 
-### Description
-
 Battery indicator widget for awesome window manager.
 
 ![Screenshot](/screenshot.png?raw=true "Screenshot")
 
-Uses `/sys/class/power_supply` for status information, and `acpi_listen` when
-`listen` is enabled.
+Displays status information from `/sys/class/power_supply`.
 
 
 ### Installation
 
-Drop the script into your awesome config folder. Suggestion:
+Drop the script into your awesome config folder, e.g.:
 
 ```bash
 cd ~/.config/awesome
 git clone https://github.com/deficient/battery-widget.git
+```
+
+For instant status updates, I recommend to install the following optional
+dependency:
+
+```bash
+pacman -S acpid
+systemctl enable acpid
 ```
 
 
@@ -125,5 +130,6 @@ The text which shows up on the alert notification, respectively the title and bo
 
 ### Requirements
 
-* [awesome 4.0](http://awesome.naquadah.org/) and possibly also 3.5
+* [awesome 4.0](http://awesome.naquadah.org/). May work on 3.5 with minor changes.
+* `acpid` (optional)
 
