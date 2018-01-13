@@ -84,7 +84,16 @@ local sysfs_names = {
 }
 
 function battery_widget:new(args)
-    return setmetatable({}, {__index = self}):init(args)
+    if args.adapter then
+        return setmetatable({}, {__index = self}):init(args)
+    end
+    -- creates an empty container wibox, which can be added to your panel even if its empty
+    local batteries = { layout = wibox.layout.fixed.horizontal }
+    for i, adapter in ipairs(self:discover()) do
+        local _args = setmetatable({adapter = adapter}, {__index = args})
+        table.insert(batteries, self(_args).widget)
+    end
+    return batteries
 end
 
 function battery_widget:discover()
@@ -118,7 +127,6 @@ function battery_widget:init(args)
     self.alert_text = args.alert_text or "${AC_BAT}${time_est}"
 
     self.widget = wibox.widget.textbox()
-    self.widget.manager = self
     self.widget.set_align("right")
     self.widget.font = args.widget_font
     self.tooltip = awful.tooltip({objects={self.widget}})
@@ -142,7 +150,7 @@ function battery_widget:init(args)
         end)
     end
 
-    return self.widget
+    return self
 end
 
 function battery_widget:get_state()

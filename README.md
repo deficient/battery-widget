@@ -27,44 +27,35 @@ systemctl enable acpid
 
 ### Usage
 
-In your `rc.lua`:
+All it takes is one additional line in your `rc.lua`:
+
+```lua
+    -- Add widgets to the wibox
+    s.mywibox:setup {
+        ...,
+        { -- Right widgets
+            ...,
+            require("battery-widget") {},
+        },
+    }
+```
+
+This will try to detect battery adapters in `/sys/class/power_supply` and add
+one widget for each of them. (With the effect, that this should not crash on
+machines without batteries)
+
+If you want more control, you can pass the name of a specific adapter as argument
+to the constructor, e.g.:
 
 ```lua
 local battery_widget = require("battery-widget")
+local BAT0 = battery_widget { adapter = "BAT0" }
 
-
--- define your battery widget (you may need to use another adapter name as in
--- your /sys/class/power_supply)
-local battery = battery_widget { adapter = "BAT0" }
-
-
--- add the widget to your wibox
-...
-right_layout:add(battery)
-...
-```
-
-If you have multiple batteries or use the same `rc.lua` on multiple devices with differing numbers of batteries:
-
-```lua
-...
--- creates an empty container wibox, which can be added to your panel even if its empty
-local batteries = { layout = wibox.layout.fixed.horizontal }
-for i, adapter in ipairs(battery_widget:discover()) do
-    table.insert(batteries, battery_widget { adapter = adapter })
-end
-...
-
--- add 'batteries' to the widget container
 s.mywibox:setup {
-    layout = wibox.layout.align.horizontal,
-    { -- Left widgets
-        ...,
-    },
     ...,
     { -- Right widgets
         ...,
-        batteries,
+        BAT0,
     },
 }
 ```
