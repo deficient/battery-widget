@@ -156,7 +156,7 @@ function battery_widget:get_state()
     end
 
     -- If there is no battery on this machine.
-    if not sysfs.status then return nil end
+    if not sysfs.state then return nil end
 
     -- return value
     local r = {
