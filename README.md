@@ -35,12 +35,12 @@ local battery_widget = require("battery-widget")
 
 -- define your battery widget (you may need to use another adapter name as in
 -- your /sys/class/power_supply)
-local battery = battery_widget({adapter = "BAT0"})
+local battery = battery_widget { adapter = "BAT0" }
 
 
 -- add the widget to your wibox
 ...
-right_layout:add(battery.widget)
+right_layout:add(battery)
 ...
 ```
 
@@ -51,7 +51,7 @@ If you have multiple batteries or use the same `rc.lua` on multiple devices with
 -- creates an empty container wibox, which can be added to your panel even if its empty
 local batteries = { layout = wibox.layout.fixed.horizontal }
 for i, adapter in ipairs(battery_widget:discover()) do
-    table.insert(batteries, battery_widget({adapter = adapter}).widget)
+    table.insert(batteries, battery_widget { adapter = adapter })
 end
 ...
 
@@ -74,7 +74,7 @@ s.mywibox:setup {
 Full example:
 
 ```lua
-battery_widget({
+battery_widget {
     adapter = "BAT0",
     ac_prefix = "AC: ",
     battery_prefix = "Bat: ",
@@ -92,7 +92,7 @@ battery_widget({
     alert_timeout = 0,
     alert_title = "Low battery !",
     alert_text = "${AC_BAT}${time_est}"
-})
+}
 ```
 
 `adapter`
