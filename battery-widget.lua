@@ -155,6 +155,9 @@ function battery_widget:get_state()
         return trim(readfile(filename))
     end
 
+    -- If there is no battery on this machine.
+    if not sysfs.status then return nil end
+
     -- return value
     local r = {
         state     = tolower (read_trim(bat.."/"..sysfs.state)),
@@ -180,6 +183,9 @@ end
 
 function battery_widget:update()
     local ctx = self:get_state()
+
+    -- If there is no battery on this machine.
+    if not ctx then return nil end
 
     -- AC/battery prefix
     ctx.AC_BAT  = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
