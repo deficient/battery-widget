@@ -159,7 +159,7 @@ function battery_widget:get_state()
                    or sysfs_names.discharging)
 
     local function read_trim(filename)
-        return trim(readfile(filename))
+        return trim(readfile(filename)) or ""
     end
 
     -- If there is no battery on this machine.
