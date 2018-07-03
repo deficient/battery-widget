@@ -176,7 +176,7 @@ function battery_widget:get_state()
         percent   = tonumber(read_trim(bat.."/"..sysfs.percent)),
     }
 
-    r.ac_state = tonumber(read_trim(pow.."/AC/online") or
+    r.ac_state = tonumber(read_trim(pow.."/AC0/online") or
                           read_trim(pow.."/ACAD/online"))
 
     if r.state == "unknown" then
