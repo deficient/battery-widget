@@ -44,6 +44,10 @@ local function trim(s)
     return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+local function read_trim(filename)
+    return trim(readfile(filename)) or ""
+end
+
 local function substitute(template, context)
     if type(template) == "string" then
         return (template:gsub("%${([%w_]+)}", function(key)
@@ -86,25 +90,28 @@ function battery_widget:new(args)
         return setmetatable({}, {__index = self}):init(args)
     end
     -- creates an empty container wibox, which can be added to your panel even if its empty
-    local batteries = { layout = wibox.layout.fixed.horizontal }
-    for i, adapter in ipairs(self:discover()) do
-        local _args = setmetatable({adapter = adapter}, {__index = args})
-        table.insert(batteries, self(_args).widget)
+    local widgets = { layout = wibox.layout.fixed.horizontal }
+    local batteries, mains, usb, usp = self:discover()
+    local ac = mains[1] or usb[1] or ups[1]
+    for i, adapter in ipairs(batteries) do
+        local _args = setmetatable({adapter = adapter, ac = ac}, {__index = args})
+        table.insert(widgets, self(_args).widget)
     end
-    return batteries
+    return widgets
 end
 
 function battery_widget:discover()
-    local adapters = {}
-    for adapter in io.popen("ls -1 /sys/class/power_supply"):lines() do
-        if adapter:match("BAT") then
-            table.insert(adapters, adapter)
-        end
+    local pow      = "/sys/class/power_supply/"
+    local adapters = { Battery = {}, UPS = {}, Mains = {}, USB = {} }
+    for adapter in io.popen("ls -1 " .. pow):lines() do
+        local type = read_trim(pow .. adapter .. "/type")
+        table.insert(adapters[type], adapter)
     end
-    return adapters
+    return adapters.Battery, adapters.Mains, adapters.USB, adapters.UPS
 end
 
 function battery_widget:init(args)
+    self.ac = args.ac or "AC"
     self.adapter = args.adapter or "BAT0"
     self.ac_prefix = args.ac_prefix or "AC: "
     self.battery_prefix = args.battery_prefix or "Bat: "
@@ -153,14 +160,11 @@ end
 
 function battery_widget:get_state()
     local pow   = "/sys/class/power_supply/"
+    local ac    = pow .. self.ac
     local bat   = pow .. self.adapter
     local sysfs = (file_exists(bat.."/"..sysfs_names.charging.rate)
                    and sysfs_names.charging
                    or sysfs_names.discharging)
-
-    local function read_trim(filename)
-        return trim(readfile(filename)) or ""
-    end
 
     -- If there is no battery on this machine.
     if not sysfs.state then return nil end
@@ -176,8 +180,7 @@ function battery_widget:get_state()
         percent   = tonumber(read_trim(bat.."/"..sysfs.percent)),
     }
 
-    r.ac_state = tonumber(read_trim(pow.."/AC/online") or
-                          read_trim(pow.."/ACAD/online"))
+    r.ac_state = tonumber(read_trim(ac.."/online"))
 
     if r.state == "unknown" then
         r.state = "charged"
