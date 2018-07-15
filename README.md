@@ -49,7 +49,7 @@ to the constructor, e.g.:
 
 ```lua
 local battery_widget = require("battery-widget")
-local BAT0 = battery_widget { adapter = "BAT0" }
+local BAT0 = battery_widget { adapter = "BAT0", ac = "AC" }
 
 s.mywibox:setup {
     ...,
@@ -66,6 +66,7 @@ Full example:
 
 ```lua
 battery_widget {
+    ac = "AC",
     adapter = "BAT0",
     ac_prefix = "AC: ",
     battery_prefix = "Bat: ",
@@ -88,6 +89,9 @@ battery_widget {
 
 `adapter`
 The pointer located inside of `/sys/class/power_supply` which corresponds to your battery's status.
+
+`ac`
+The pointer located inside of `/sys/class/power_supply` which corresponds to your AC status.
 
 `ac_prefix`
 The prefix to populate `${AC_BAT}` when your computer is using ac power. If your font supports unicode characters, you could use "🔌".
