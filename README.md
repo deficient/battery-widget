@@ -123,6 +123,9 @@ The time after which the alert expire, `0` for no timeout.
 `alert_title`, `alert_text`
 The text which shows up on the alert notification, respectively the title and body text.
 
+`warn_full_battery`, boolean
+Whether a notification should be displayed when the battery gets fully charged
+
 ### Requirements
 
 * [awesome 4.0](http://awesome.naquadah.org/). May work on 3.5 with minor changes.
