@@ -256,11 +256,10 @@ function battery_widget:update()
 
     -- low battery notification
     if naughty then
-        if ctx.state == "discharging" and
-           ctx.percent and
-           ctx.percent <= self.alert_threshold then
-                self:notify(substitute(self.alert_title, ctx),
-                            substitute(self.alert_text, ctx))
+        if (ctx.state == "discharging" and
+                ctx.percent and ctx.percent <= self.alert_threshold) then
+            self:notify(substitute(self.alert_title, ctx),
+                        substitute(self.alert_text, ctx))
         elseif ctx.state == "full" and self.warn_full_battery then
             self:notify('Battery Full!', 'Remove power chord')
         else
