@@ -136,6 +136,8 @@ function battery_widget:init(args)
     self.widget.font = args.widget_font
     self.tooltip = awful.tooltip({objects={self.widget}})
 
+    self.warn_full_battery = args.warn_full_battery
+
     self.widget:buttons(awful.util.table.join(
         awful.button({ }, 1, function() self:update() end),
         awful.button({ }, 3, function() self:update() end)
@@ -254,11 +256,12 @@ function battery_widget:update()
 
     -- low battery notification
     if naughty then
-        if ctx.state == "discharging" then
-            if ctx.percent and ctx.percent <= self.alert_threshold then
+        if ctx.state == "discharging" and
+            ctx.percent and ctx.percent <= self.alert_threshold then
                 self:notify(substitute(self.alert_title, ctx),
                             substitute(self.alert_text, ctx))
-            end
+        elseif ctx.state == "full" and self.warn_full_battery then
+            self:notify('Battery Full!', 'Remove power chord')
         else
             if self.alert then
                 naughty.destroy(
