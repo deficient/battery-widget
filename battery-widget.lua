@@ -35,6 +35,13 @@ local function color_tags(color)
     end
 end
 
+local function font_tags(font)
+    if font
+        then return '<span font="' .. font .. '">', '</span>'
+        else return '', ''
+    end
+end
+
 local function round(value)
     return math.floor(value + 0.5)
 end
@@ -115,6 +122,7 @@ function battery_widget:init(args)
     self.adapter = args.adapter or "BAT0"
     self.ac_prefix = args.ac_prefix or "AC: "
     self.battery_prefix = args.battery_prefix or "Bat: "
+    self.prefix_font = args.prefix_font
     self.limits = args.limits or {
         { 25, "red"   },
         { 50, "orange"},
@@ -122,7 +130,7 @@ function battery_widget:init(args)
     }
 
     self.widget_text = args.widget_text or (
-        "${AC_BAT}${color_on}${percent}%${color_off}")
+        "${prefix_font_on}${AC_BAT}${prefix_font_off}${color_on}${percent}%${color_off}")
     self.tooltip_text = args.tooltip_text or (
         "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%")
 
@@ -200,6 +208,9 @@ function battery_widget:update()
 
     -- If there is no battery on this machine.
     if not ctx then return nil end
+
+    -- AC/battery prefix font
+    ctx.prefix_font_on, ctx.prefix_font_off = font_tags(self.prefix_font)
 
     -- AC/battery prefix
     ctx.AC_BAT  = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
