@@ -202,7 +202,24 @@ function battery_widget:update()
     if not ctx then return nil end
 
     -- AC/battery prefix
-    ctx.AC_BAT  = ctx.ac_state == 1 and self.ac_prefix or self.battery_prefix
+    ctx.AC_BAT  = ctx.ac_state == 1 and self.ac_prefix
+    if not ctx.AC_BAT then
+        if type(self.battery_prefix) == "table" then
+            if ctx.percent then
+                for k, v in ipairs(self.battery_prefix) do
+                    if ctx.percent <= v[1] then
+                        ctx.AC_BAT = v[2]
+                        break
+                    end
+                end
+            end
+            if not ctx.AC_BAT then
+                ctx.AC_BAT = "Err!"
+            end
+        else
+            ctx.AC_BAT = self.battery_prefix
+        end
+    end
 
     -- Colors
     ctx.color_on = ""

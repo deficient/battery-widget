@@ -97,7 +97,7 @@ The pointer located inside of `/sys/class/power_supply` which corresponds to you
 The prefix to populate `${AC_BAT}` when your computer is using ac power. If your font supports unicode characters, you could use "🔌".
 
 `battery_prefix`
-The prefix to populate `${AC_BAT}` when your computer is using battery power. If your font supports unicode characters, you could use "🔋".
+The prefix to populate `${AC_BAT}` when your computer is using battery power. If your font supports unicode characters, you could use "🔋". Can also be configured as a table like `limits` to show different prefixes at different battery percentages.
 
 `limits`
 The colors that the percentage changes to, as well as the upper-bound limit of when it will change. Ex. `{100, "green"}` means any percentage lower than 100 is colored green.
