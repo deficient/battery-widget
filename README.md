@@ -126,6 +126,19 @@ The text which shows up on the alert notification, respectively the title and bo
 `warn_full_battery`, boolean
 Whether a notification should be displayed when the battery gets fully charged
 
+`ac_prefix`, `battery_prefix`, and `widget_text` can be further customised with spans, e.g.:
+
+```lua
+battery_widget {
+    -- Use different colors for ac_prefix and battery_prefix
+    ac_prefix = '<span color="red">AC: </span>',
+    battery_prefix = '<span color="green">Bat: </span>',
+
+    -- Use a bold font for both prefixes
+    widget_text = '<span font="Deja Vu Sans Bold 16">${AC_BAT}</span>${color_on}${percent}%${color_off}'
+}
+```
+
 ### Requirements
 
 * [awesome 4.0](http://awesome.naquadah.org/). May work on 3.5 with minor changes.
