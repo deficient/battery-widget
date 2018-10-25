@@ -126,7 +126,8 @@ The text which shows up on the alert notification, respectively the title and bo
 `warn_full_battery`, boolean
 Whether a notification should be displayed when the battery gets fully charged
 
-`ac_prefix`, `battery_prefix`, and `widget_text` can be further customised with spans, e.g.:
+
+The text elements `ac_prefix`, `battery_prefix`, and `widget_text` can be further customised with spans, e.g.:
 
 ```lua
 battery_widget {
