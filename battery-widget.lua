@@ -59,19 +59,19 @@ local function substitute(template, context)
     end
 end
 
-local function choose_by_percent(table, percent)
-    if type(table) ~= "table" then
-        return table
-    end
-
-    if percent then
-        for k, v in ipairs(table) do
-            if (percent <= v[1]) then
-                return v[2]
+local function lookup_by_limits(limits, value)
+    if type(limits) == "table" then
+        if value then
+            for k, v in ipairs(limits) do
+                if (value <= v[1]) then
+                    return v[2]
+                end
             end
         end
+        return nil
+    else
+        return limits
     end
-    return nil
 end
 
 ------------------------------------------
@@ -218,12 +218,13 @@ function battery_widget:update()
 
     -- AC/battery prefix
     ctx.AC_BAT  = (ctx.ac_state == 1
-                   and choose_by_percent(self.ac_prefix, ctx.percent)
-                   or choose_by_percent(self.battery_prefix, ctx.percent)
+                   and lookup_by_limits(self.ac_prefix, ctx.percent)
+                   or lookup_by_limits(self.battery_prefix, ctx.percent)
                    or "Err!")
 
     -- Colors
-    ctx.color_on, ctx.color_off = color_tags(choose_by_percent(self.percent_colors, ctx.percent))
+    ctx.color_on, ctx.color_off = color_tags(
+        lookup_by_limits(self.percent_colors, ctx.percent))
 
     -- estimate time
     ctx.charge_dir = 0    -- +1|0|-1 -> charging|static|discharging

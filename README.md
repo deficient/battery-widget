@@ -151,7 +151,7 @@ battery_widget {
 }
 ```
 
-`ac_prefix`, `battery_prefix`, and `widget_text` can be further customised with spans, e.g.:
+`ac_prefix`, `battery_prefix`, and `widget_text` can be further customized with spans to specify colors or fonts, e.g.:
 
 ```lua
 battery_widget {
