@@ -73,7 +73,7 @@ battery_widget {
     percent_colors = {
         { 25, "red"   },
         { 50, "orange"},
-        {100, "green" }
+        {999, "green" },
     },
     listen = true,
     timeout = 10,

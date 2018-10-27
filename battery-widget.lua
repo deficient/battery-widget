@@ -135,7 +135,7 @@ function battery_widget:init(args)
     self.percent_colors = args.percent_colors or args.limits or {
         { 25, "red"   },
         { 50, "orange"},
-        {100, "green" }
+        {999, "green" },
     }
 
     self.widget_text = args.widget_text or (
