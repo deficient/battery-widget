@@ -70,7 +70,7 @@ battery_widget {
     adapter = "BAT0",
     ac_prefix = "AC: ",
     battery_prefix = "Bat: ",
-    limits = {
+    percent_colors = {
         { 25, "red"   },
         { 50, "orange"},
         {100, "green" }
@@ -97,9 +97,9 @@ The pointer located inside of `/sys/class/power_supply` which corresponds to you
 The prefix to populate `${AC_BAT}` when your computer is using ac power. If your font supports unicode characters, you could use "🔌".
 
 `battery_prefix`
-The prefix to populate `${AC_BAT}` when your computer is using battery power. If your font supports unicode characters, you could use "🔋".
+The prefix to populate `${AC_BAT}` when your computer is using battery power. If your font supports unicode characters, you could use "🔋". Can also be configured as a table like `percent_colors` to show different prefixes at different battery percentages.
 
-`limits`
+`percent_colors` (`limits` for backwards compatibility)
 The colors that the percentage changes to, as well as the upper-bound limit of when it will change. Ex. `{100, "green"}` means any percentage lower than 100 is colored green.
 
 `listen`
@@ -126,7 +126,32 @@ The text which shows up on the alert notification, respectively the title and bo
 `warn_full_battery`, boolean
 Whether a notification should be displayed when the battery gets fully charged
 
-The text elements `ac_prefix`, `battery_prefix`, and `widget_text` can be further customised with spans, e.g.:
+### Usage Examples
+
+Percentage tables can be used for `ac_prefix`, `battery_prefix`, and `percent_colors` to show different things depending on the battery charge level, e.g.:
+
+```lua
+battery_widget {
+    -- Show different prefixes when charging on AC
+    ac_prefix = {
+        { 25, "not charged" },
+        { 50, "1/4 charged" },
+        { 75, "2/4 charged" },
+        { 95, "3/4 charged" },
+        {100, "fully charged" }
+    },
+
+    -- Show a visual indicator of charge level when on battery power
+    battery_prefix = {
+        { 25, "#--- "},
+        { 50, "##-- "},
+        { 75, "###- "},
+        {100, "#### "}
+    }
+}
+```
+
+`ac_prefix`, `battery_prefix`, and `widget_text` can be further customised with spans, e.g.:
 
 ```lua
 battery_widget {
