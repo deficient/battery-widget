@@ -59,6 +59,21 @@ local function substitute(template, context)
     end
 end
 
+local function choose_by_percent(table, percent)
+    if type(table) ~= "table" then
+        return table
+    end
+
+    if percent then
+        for k, v in ipairs(table) do
+            if (percent <= v[1]) then
+                return v[2]
+            end
+        end
+    end
+    return nil
+end
+
 ------------------------------------------
 -- Battery widget interface
 ------------------------------------------
@@ -202,36 +217,13 @@ function battery_widget:update()
     if not ctx then return nil end
 
     -- AC/battery prefix
-    ctx.AC_BAT  = ctx.ac_state == 1 and self.ac_prefix
-    if not ctx.AC_BAT then
-        if type(self.battery_prefix) == "table" then
-            if ctx.percent then
-                for k, v in ipairs(self.battery_prefix) do
-                    if ctx.percent <= v[1] then
-                        ctx.AC_BAT = v[2]
-                        break
-                    end
-                end
-            end
-            if not ctx.AC_BAT then
-                ctx.AC_BAT = "Err!"
-            end
-        else
-            ctx.AC_BAT = self.battery_prefix
-        end
-    end
+    ctx.AC_BAT  = (ctx.ac_state == 1
+                   and choose_by_percent(self.ac_prefix, ctx.percent)
+                   or choose_by_percent(self.battery_prefix, ctx.percent)
+                   or "Err!")
 
     -- Colors
-    ctx.color_on = ""
-    ctx.color_off = ""
-    if ctx.percent then
-        for k, v in ipairs(self.limits) do
-            if ctx.percent <= v[1] then
-                ctx.color_on, ctx.color_off = color_tags(v[2])
-                break
-            end
-        end
-    end
+    ctx.color_on, ctx.color_off = color_tags(choose_by_percent(self.limits, ctx.percent))
 
     -- estimate time
     ctx.charge_dir = 0    -- +1|0|-1 -> charging|static|discharging
