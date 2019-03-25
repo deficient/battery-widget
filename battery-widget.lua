@@ -166,7 +166,7 @@ function battery_widget:init(args)
     self:update()
 
     if (args.listen or args.listen == nil) and watch then
-        self.listener = watch("acpi_listen", {
+        self.listener = watch("acpi_listen", args.timeout, {
             stdout = function(line) self:update() end,
         })
         awesome.connect_signal("exit", function()
