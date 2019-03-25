@@ -139,7 +139,7 @@ function battery_widget:init(args)
     }
 
     self.widget_text = args.widget_text or (
-        "${AC_BAT}${color_on}${percent}%${color_off}")
+        "${AC_BAT}${color_on}${statussym}${percent}%${color_off}")
     self.tooltip_text = args.tooltip_text or (
         "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%")
 
@@ -238,9 +238,13 @@ function battery_widget:update()
         if not ctx.state or ctx.state == "discharging" then
             ctx.charge_dir = -1
             ctx.time_left = ctx.charge / ctx.rate
+            ctx.statussym="▼"
         elseif ctx.state == "charging" then
             ctx.charge_dir = 1
             ctx.time_left = (ctx.capacity - ctx.charge) / ctx.rate
+            ctx.statussym="▲"
+		else
+            ctx.statussym="-"
         end
     end
 
