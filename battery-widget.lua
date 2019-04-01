@@ -108,7 +108,7 @@ function battery_widget:new(args)
     end
     -- creates an empty container wibox, which can be added to your panel even if its empty
     local widgets = { layout = wibox.layout.fixed.horizontal }
-    local batteries, mains, usb, usp = self:discover()
+    local batteries, mains, usb, ups = self:discover()
     local ac = mains[1] or usb[1] or ups[1]
     for i, adapter in ipairs(batteries) do
         local _args = setmetatable({adapter = adapter, ac = ac}, {__index = args})
