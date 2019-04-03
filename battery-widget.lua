@@ -207,6 +207,12 @@ function battery_widget:get_state()
 
     if r.percent == nil and r.charge and r.capacity then
         r.percent = round(r.charge * 100 / r.capacity)
+	if r.percent > 100 then
+		r.percent = 100
+	end
+	if r.percent <= then
+		r.percent = 0
+	end
     end
 
     return r
