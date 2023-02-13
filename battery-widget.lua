@@ -149,7 +149,7 @@ function battery_widget:init(args)
     self.alert_text = args.alert_text or "${AC_BAT}${time_est}"
 
     self.widget = wibox.widget.textbox()
-    self.widget.set_align("right")
+    self.widget:set_align("right")
     self.widget.font = args.widget_font
     self.tooltip = awful.tooltip({objects={self.widget}})
 
