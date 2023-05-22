@@ -147,12 +147,14 @@ function battery_widget:init(args)
     self.alert_timeout = args.alert_timeout or 0
     self.alert_title = args.alert_title or "Low battery !"
     self.alert_text = args.alert_text or "${AC_BAT}${time_est}"
+    self.alert_icon = args.alert_icon or nil
 
     self.widget = wibox.widget.textbox()
     self.widget.font = args.widget_font
     self.tooltip = awful.tooltip({objects={self.widget}})
 
     self.warn_full_battery = args.warn_full_battery
+    self.full_battery_icon = args.full_battery_icon or nil
 
     self.widget:buttons(awful.util.table.join(
         awful.button({ }, 1, function() self:update() end),
@@ -270,9 +272,10 @@ function battery_widget:update()
         if (ctx.state == "discharging" and
                 ctx.percent and ctx.percent <= self.alert_threshold) then
             self:notify(substitute(self.alert_title, ctx),
-                        substitute(self.alert_text, ctx))
+                        substitute(self.alert_text, ctx),
+                        self.alert_icon)
         elseif ctx.state == "full" and self.warn_full_battery then
-            self:notify('Battery Full!', 'Remove power chord')
+            self:notify('Battery Full!', 'Remove power chord', self.full_battery_icon)
         else
             if self.alert then
                 naughty.destroy(
@@ -284,13 +287,14 @@ function battery_widget:update()
     end
 end
 
-function battery_widget:notify(title, text)
+function battery_widget:notify(title, text, icon)
     if self.alert then
         naughty.replace_text(self.alert, title, text)
     else
         self.alert = naughty.notify({
             title = title,
             text = text,
+            icon = icon,
             preset = naughty.config.presets.critical,
             timeout = self.alert_timeout
         })

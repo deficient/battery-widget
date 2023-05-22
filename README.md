@@ -83,7 +83,10 @@ battery_widget {
     alert_threshold = 5,
     alert_timeout = 0,
     alert_title = "Low battery !",
-    alert_text = "${AC_BAT}${time_est}"
+    alert_text = "${AC_BAT}${time_est}",
+    alert_icon = "~/Downloads/low_battery_icon.png",
+    warn_full_battery = true,
+    full_battery_icon = "~/Downloads/full_battery_icon.png",
 }
 ```
 
@@ -120,11 +123,14 @@ The percentage used as the maximum value at which an alert will be generated, `-
 `alert_timeout`
 The time after which the alert expire, `0` for no timeout.
 
-`alert_title`, `alert_text`
-The text which shows up on the alert notification, respectively the title and body text.
+`alert_title`, `alert_text`, `alert_icon`
+The text which shows up on the alert notification, respectively the title, body text and image path.
 
 `warn_full_battery`, boolean
-Whether a notification should be displayed when the battery gets fully charged
+Whether a notification should be displayed when the battery gets fully charged.
+
+`full_battery_icon`
+Path to the image, which should be shown as part of the notification when battery gets fully charged (depends on `warn_full_battery`).
 
 ### Usage Examples
 
