@@ -156,6 +156,8 @@ function battery_widget:init(args)
     self.warn_full_battery = args.warn_full_battery
     self.full_battery_icon = args.full_battery_icon or nil
 
+    self.previous_state = nil
+
     self.widget:buttons(awful.util.table.join(
         awful.button({ }, 1, function() self:update() end),
         awful.button({ }, 3, function() self:update() end)
@@ -274,7 +276,10 @@ function battery_widget:update()
             self:notify(substitute(self.alert_title, ctx),
                         substitute(self.alert_text, ctx),
                         self.alert_icon)
-        elseif ctx.state == "full" and self.warn_full_battery then
+        elseif ctx.state == "full" and
+                self.warn_full_battery and
+                self.previous_state ~= nil and
+                self.previous_state ~= "full" then
             self:notify('Battery Full!', 'Remove power chord', self.full_battery_icon)
         else
             if self.alert then
@@ -285,6 +290,8 @@ function battery_widget:update()
             end
         end
     end
+
+    self.previous_state = ctx.state
 end
 
 function battery_widget:notify(title, text, icon)
