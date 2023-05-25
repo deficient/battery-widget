@@ -16,53 +16,47 @@ cd ~/.config/awesome
 git clone https://github.com/deficient/battery-widget.git
 ```
 
-For instant status updates, I recommend to install the following optional
-dependency:
+Optionally, in order to receive status updates, you will also need `acpid`:
 
 ```bash
 pacman -S acpid
-systemctl enable acpid
+systemctl enable --now acpid
 ```
 
 
 ### Usage
 
-All it takes is one additional line in your `rc.lua`:
+In order to add a battery widget to your wibox, you have to import the module
+and then instanciate a widget with the desired options like this:
 
 ```lua
-    -- Add widgets to the wibox
-    s.mywibox:setup {
-        ...,
-        { -- Right widgets
-            ...,
-            require("battery-widget") {},
-        },
-    }
-```
-
-This will try to detect battery adapters in `/sys/class/power_supply` and add
-one widget for each of them. (With the effect, that this should not crash on
-machines without batteries)
-
-If you want more control, you can pass the name of a specific adapter as argument
-to the constructor, e.g.:
-
-```lua
+-- Import module:
 local battery_widget = require("battery-widget")
-local BAT0 = battery_widget { adapter = "BAT0", ac = "AC" }
 
+-- Instanciate and add widget to the wibox:
 s.mywibox:setup {
     ...,
     { -- Right widgets
         ...,
-        BAT0,
+        battery_widget {
+            -- pass options here
+        },
     },
 }
 ```
 
-### Usage Options
+If you pass an adapter name using the `adapter = "..."` option, a widget for
+that specific battery adapter will be instanciated. If the `adapter` option is
+not specified, the call will return a table containing widgets for each of the
+battery adapters in `/sys/class/power_supply`. In that case if there are no
+batteries an empty table will be returned and no error will occur on machines
+without batteries.
 
-Full example:
+
+### Options
+
+The behaviour and appearance of the widget can be tweaked using a few options.
+This is an example using all available options:
 
 ```lua
 battery_widget {
@@ -91,10 +85,10 @@ battery_widget {
 ```
 
 `adapter`
-The pointer located inside of `/sys/class/power_supply` which corresponds to your battery's status.
+The name of the directory entry in `/sys/class/power_supply` corresponding to the requested battery adapter.
 
 `ac`
-The pointer located inside of `/sys/class/power_supply` which corresponds to your AC status.
+The name of the directory entry in `/sys/class/power_supply` corresponding to your AC status.
 
 `ac_prefix`
 The prefix to populate `${AC_BAT}` when your computer is using ac power. If your font supports unicode characters, you could use "🔌".
@@ -144,7 +138,7 @@ battery_widget {
         { 50, "1/4 charged" },
         { 75, "2/4 charged" },
         { 95, "3/4 charged" },
-        {100, "fully charged" }
+        {100, "fully charged" },
     },
 
     -- Show a visual indicator of charge level when on battery power
@@ -152,7 +146,7 @@ battery_widget {
         { 25, "#--- "},
         { 50, "##-- "},
         { 75, "###- "},
-        {100, "#### "}
+        {100, "#### "},
     }
 }
 ```
@@ -172,6 +166,5 @@ battery_widget {
 
 ### Requirements
 
-* [awesome 4.0](http://awesome.naquadah.org/). May work on 3.5 with minor changes.
+* [awesome 4.0](http://awesome.naquadah.org/).
 * `acpid` (optional)
-
