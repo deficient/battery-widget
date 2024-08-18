@@ -1,3 +1,7 @@
+This repository has been assimilated into: https://github.com/deficient/deficient
+
+
+
 ## awesome.battery-widget
 
 Battery indicator widget for awesome window manager.
